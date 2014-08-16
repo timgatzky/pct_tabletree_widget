@@ -2,12 +2,13 @@
 
 /**
  * Contao Open Source CMS
- *
- * Copyright (c) 2005-2013 Leo Feyer
- *
- * @package Core
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * 
+ * Copyright (C) 2005-2013 Leo Feyer
+ * 
+ * @copyright	Tim Gatzky 2014, Premium Contao Webworks, Premium Contao Themes
+ * @author		Tim Gatzky <info@tim-gatzky.de>
+ * @package		pct_tabltree
+ * @link		http://contao.org
  */
 
 /**
@@ -70,6 +71,7 @@ class PageTableTree extends \Backend
 		$strTable = \Input::get('table');
 		$strField = \Input::get('field');
 		$strSource = \Input::get('source');
+		$strValueField = \Input::get('valueField') ? \Input::get('valueField') : 'title';
 		
 		// Define the current ID
 		define('CURRENT_ID', (\Input::get('table') ? \Session::getInstance()->get('CURRENT_ID') : \Input::get('id')));
@@ -77,6 +79,9 @@ class PageTableTree extends \Backend
 		$this->loadDataContainer($strTable);
 		$strDriver = 'DC_' . $GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'];
 		$objDca = new $strDriver($strTable);
+		
+		$objDca->valueField = $strValueField;
+		$objDca->keyField = $strKeyField;
 		
 		// AJAX request
 		if ($_POST && \Environment::get('isAjaxRequest'))
@@ -90,7 +95,12 @@ class PageTableTree extends \Backend
 		$objTableTree = new \PCT\Widgets\TableTree(array(
 			'strId'    => $strField,
 			'strTable' => $strTable,
-			'strSource'=> $strSource,
+			'tabletree'=> array
+			(
+				'source'		=> $strSource,
+				'valueField'	=> $strValueField,
+				'keyField'		=> \Input::get('keyField') ? \Input::get('keyField') : '',
+			),
 			'strField' => $strField,
 			'strName'  => $strField,
 			'varValue' => array_filter(explode(',', \Input::get('value')))

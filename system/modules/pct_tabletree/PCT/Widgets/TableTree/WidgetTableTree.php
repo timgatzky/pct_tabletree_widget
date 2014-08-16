@@ -49,6 +49,18 @@ class WidgetTableTree extends \Widget
 	 * @var string
 	 */
 	protected $strSource = '';
+	
+	/**
+	 * Field name of the value column
+	 * @var string
+	 */
+	protected $strValueField = '';
+
+	/**
+	 * Field name of the key column
+	 * @var string
+	 */
+	protected $strKeyField = '';
 
 
 	/**
@@ -61,14 +73,15 @@ class WidgetTableTree extends \Widget
 		parent::__construct($arrAttributes);
 		
 		// load js
-		$GLOBALS['TL_JAVASCRIPT'][] = PCT_CUSTOMELEMENTS_TAGS_PATH.'/PCT/Widgets/TableTree/assets/js/tabletree.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
 		
 		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true)
 		{
 			$this->blnIsMultiple = true;
 		}
-		
-		$this->strSource = 'tl_pct_customelement_tags';
+		$this->strSource = $arrAttributes['tabletree']['source'];
+		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'title';
+		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
 	}
 
 
@@ -79,24 +92,23 @@ class WidgetTableTree extends \Widget
 	 */
 	protected function validator($varInput)
 	{
-	   if ($varInput == '')
-	   {
-	   	if ($this->mandatory)
-	   	{
-	   		$this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['mandatory'], $this->strLabel));
-	   	}
-	
-	   	return '';
-	   }
-	   elseif (strpos($varInput, ',') === false)
-	   {
-	   		return $this->blnIsMultiple ? array(intval($varInput)) : intval($varInput);
-	   }
-	   else
-	   {
-	   		$arrValue = array_map('intval', array_filter(explode(',', $varInput)));
-	   		return $this->blnIsMultiple ? $arrValue : $arrValue[0];
-	   }
+		if ($varInput == '')
+		{
+			if ($this->mandatory)
+			{
+				$this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['mandatory'], $this->strLabel));
+			}
+			return '';
+		}
+		elseif (strpos($varInput, ',') === false)
+		{
+				return $this->blnIsMultiple ? array(intval($varInput)) : intval($varInput);
+		}
+		else
+		{
+				$arrValue = array_map('intval', array_filter(explode(',', $varInput)));
+				return $this->blnIsMultiple ? $arrValue : $arrValue[0];
+		}
 	}
 
 
@@ -109,6 +121,8 @@ class WidgetTableTree extends \Widget
 		$arrSet = array();
 		$arrValues = array();
 		$blnHasOrder = ($this->strOrderField != '' && is_array($this->{$this->strOrderField}));
+		$strKeyField = $this->strKeyField;
+		$strValueField = $this->strValueField;
 
 		if (!empty($this->varValue)) // Can be an array
 		{
@@ -124,7 +138,7 @@ class WidgetTableTree extends \Widget
 				while ($objRows->next())
 				{
 					$arrSet[] = $objRows->id;
-					$arrValues[$objRows->id] = $objRows->title . ' (' . $objRows->id . ')';
+					$arrValues[$objRows->id] = $objRows->$strValueField . ' (' . $objRows->id . ')';
 				}
 			}
 
@@ -167,15 +181,16 @@ class WidgetTableTree extends \Widget
 		}
 		
 		$return .= '</ul>
-    <p><a href="'.PCT_CUSTOMELEMENTS_TAGS_PATH.'/PCT/Widgets/TableTree/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;act=show&amp;id='.$this->activeRecord->id.'&amp;value='.implode(',', $arrSet).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\'});return false">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . ($blnHasOrder ? '
-    <script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderId.'")</script>' : '') . '
+    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;act=show&amp;id='.$this->activeRecord->id.'&amp;value='.implode(',', $arrSet).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\'});return false">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
+    ($blnHasOrder ? '<script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderId.'")</script>' : '') . '
+  
   </div>';
 
 		if (!\Environment::get('isAjaxRequest'))
 		{
 			$return = '<div>' . $return . '</div>';
 		}
-
+		
 		return $return;
 	}
 }

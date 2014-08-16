@@ -11,7 +11,7 @@
  *
  * @returns {boolean}
  */
-AjaxRequest.toggleTableTree = function (el, id, field, name, source, level) 
+AjaxRequest.toggleTabletree = function (el, id, field, name, source, level) 
 {
 	el.blur();
 	Backend.getScrollOffset();
@@ -19,21 +19,27 @@ AjaxRequest.toggleTableTree = function (el, id, field, name, source, level)
 	var item = $(id),
 		image = $(el).getFirst('img');
 
-	if (item) {
-		if (item.getStyle('display') == 'none') {
+	// toggleTabletree
+	if (item) 
+	{
+		if (item.getStyle('display') == 'none') 
+		{
 			item.setStyle('display', 'inline');
 			image.src = image.src.replace('folPlus.gif', 'folMinus.gif');
 			$(el).store('tip:title', Contao.lang.collapse);
-			new Request.Contao({field:el}).post({'action':'toggleTableTree', 'id':id, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
-		} else {
+			new Request.Contao({field:el}).post({'action':'toggleTabletree', 'id':id, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
+		} 
+		else 
+		{
 			item.setStyle('display', 'none');
 			image.src = image.src.replace('folMinus.gif', 'folPlus.gif');
 			$(el).store('tip:title', Contao.lang.expand);
-			new Request.Contao({field:el}).post({'action':'toggleTableTree', 'id':id, 'state':0, 'REQUEST_TOKEN':Contao.request_token});
+			new Request.Contao({field:el}).post({'action':'toggleTabletree', 'id':id, 'state':0, 'REQUEST_TOKEN':Contao.request_token});
 		}
 		return false;
 	}
 
+	// loadTabletree
 	new Request.Contao({
 		field: el,
 		evalScripts: true,
@@ -66,7 +72,7 @@ AjaxRequest.toggleTableTree = function (el, id, field, name, source, level)
 			// HOOK
 			window.fireEvent('ajax_change');
 			}
-	}).post({'action':'loadTableTree', 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
+	}).post({'action':'loadTabletree', 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'valueField':valueField, 'keyField':keyField, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
 	return false;
 }
 
@@ -92,7 +98,8 @@ Backend.openModalTabletreeSelector = function(options)
 	M.addButton(Contao.lang.close, 'btn', function() {
 		this.hide();
 	});
-	M.addButton(Contao.lang.apply, 'btn primary', function() {
+	M.addButton(Contao.lang.apply, 'btn primary', function() 
+	{
 		var val = [],
 			frm = null,
 			frms = window.frames;
@@ -106,22 +113,23 @@ Backend.openModalTabletreeSelector = function(options)
 			alert('Could not find the SimpleModal frame');
 			return;
 		}
-		if (frm.document.location.href.indexOf('contao/main.php') != -1) {
-			alert(Contao.lang.picker);
-			return; // see #5704
-		}
+		
 		var inp = frm.document.getElementById('tl_listing').getElementsByTagName('input');
 		for (var i=0; i<inp.length; i++) {
 			if (!inp[i].checked || inp[i].id.match(/^check_all_/)) continue;
 			if (!inp[i].id.match(/^reset_/)) val.push(inp[i].get('value'));
 		}
-		if (opt.tag) {
+		
+		if (opt.tag) 
+		{
 			$(opt.tag).value = val.join(',');
 			if (opt.url.match(/page\.php/)) {
 				$(opt.tag).value = '{{link_url::' + $(opt.tag).value + '}}';
 			}
 			opt.self.set('href', opt.self.get('href').replace(/&value=[^&]*/, '&value='+val.join(',')));
-		} else {
+		} 
+		else 
+		{
 			$('ctrl_'+opt.id).value = val.join("\t");
 			var act = 'reloadTabletree';
 			new Request.Contao({
@@ -130,11 +138,13 @@ Backend.openModalTabletreeSelector = function(options)
 				onRequest: AjaxRequest.displayBox(Contao.lang.loading + ' …'),
 				onSuccess: function(txt, json) {
 					$('ctrl_'+opt.id).getParent('div').set('html', json.content);
+					console.log(json.content);
+					
 					json.javascript && Browser.exec(json.javascript);
 					AjaxRequest.hideBox();
 					window.fireEvent('ajax_change');
 				}
-			}).post({'action':act, 'name':opt.id,'source':options.source, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
+			}).post({'action':act, 'name':opt.id,'source':options.source, 'valueField':options.valueField, 'keyField':options.keyField, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
 		}
 		this.hide();
 	});

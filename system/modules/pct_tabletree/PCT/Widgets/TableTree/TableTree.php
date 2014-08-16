@@ -38,17 +38,28 @@ class TableTree extends \Widget
 	protected $blnIsMultiple = false;
 	
 	/**
-	 * Source table
-	 * @var string
-	 */
-	protected $strSource = '';
-
-	
-	/**
 	 * Array tag nodes
 	 * @param array
 	 */
 	protected $arrNodes = array();
+
+	/**
+	 * Source table
+	 * @var string
+	 */
+	protected $strSource = '';
+	
+	/**
+	 * Field name of the value column
+	 * @var string
+	 */
+	protected $strValueField = '';
+
+	/**
+	 * Field name of the key column
+	 * @var string
+	 */
+	protected $strKeyField = '';
 
 
 	/**
@@ -61,9 +72,12 @@ class TableTree extends \Widget
 		parent::__construct($arrAttributes);
 		
 		// load js
-		$GLOBALS['TL_JAVASCRIPT'][] = PCT_CUSTOMELEMENTS_TAGS_PATH.'/PCT/Widgets/TableTree/assets/js/tabletree.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
 		
-		$this->strSource = $arrAttributes['strSource'];
+		$this->strSource = $arrAttributes['tabletree']['source'];
+		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'title';
+		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
+		$this->strOrderField = strlen($arrAttributes['tabletree']['orderField']) > 0 ? $arrAttributes['tabletree']['orderField'] : 'sorting';
 	}
 	
 	
@@ -100,7 +114,11 @@ class TableTree extends \Widget
 			return '';
 		}
 		
+		$strKeyField = $this->strKeyField;
+		$strValueField = $this->strValueField;
+
 		$this->import('BackendUser', 'User');
+		$this->loadDataContainer($this->strSource);
 
 		// Store the keyword
 		if (\Input::post('FORM_SUBMIT') == 'item_selector')
@@ -123,8 +141,7 @@ class TableTree extends \Widget
 				$for = substr($for, 1);
 			}
 
-### title field
-			$objRoot = $this->Database->prepare("SELECT id FROM ".$this->strSource." WHERE CAST(title AS CHAR) REGEXP ?")
+			$objRoot = $this->Database->prepare("SELECT id,".$strValueField.$strKeyField != 'id' ? ",".$strKeyField : ""." FROM ".$this->strSource." WHERE CAST(title AS CHAR) REGEXP ?")
 									  ->execute($for);
 
 			if ($objRoot->numRows > 0)
@@ -157,6 +174,7 @@ class TableTree extends \Widget
 					while ($objRoot->next())
 					{
 						// Show only mounted pages to regular users
+						## tl_page only
 						if (count(array_intersect($this->User->pagemounts, $this->Database->getParentRecords($objRoot->id, $this->strSource))) > 0)
 						{
 							$arrRoot[] = $objRoot->id;
@@ -189,7 +207,7 @@ class TableTree extends \Widget
 			// Add the breadcrumb menu
 			if (\Input::get('do') != 'page')
 			{
-				\Backend::addBreadcrumb();
+				#\Backend::addBreadcrumb();
 			}
 
 			// Root nodes (breadcrumb menu)
@@ -217,10 +235,12 @@ class TableTree extends \Widget
 			// Show all pages to admins
 			elseif ($this->User->isAdmin)
 			{
-				$objPage = $this->Database->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ORDER BY sorting")->execute(0);
-				while ($objPage->next())
+				// hier einträge beschränken
+				$objRows = \Database::getInstance()->prepare("SELECT id FROM ".$this->strSource."".($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
+				
+				while ($objRows->next())
 				{
-					$tree .= $this->renderTree($objPage->id, -20);
+					$tree .= $this->renderTree($objRows->id, -20);
 				}
 			}
 
@@ -287,12 +307,12 @@ class TableTree extends \Widget
 		// Load the requested nodes
 		$tree = '';
 		$level = $level * 30;
-		$objPage = \Database::getInstance()->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ORDER BY sorting")
+		$objRows = \Database::getInstance()->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ORDER BY sorting")
 								  ->execute($id);
 
-		while ($objPage->next())
+		while ($objRows->next())
 		{
-			$tree .= $this->renderTree($objPage->id, $level);
+			$tree .= $this->renderTree($objRows->id,$level);
 		}
 		
 		return $tree;
@@ -311,26 +331,29 @@ class TableTree extends \Widget
 	protected function renderTree($id, $intMargin, $protectedPage=false, $blnNoRecursion=false)
 	{
 		static $session;
-		$session = $this->Session->getData();
-
+		$session = \Session::getInstance()->getData();
+		$objDatabase = \Database::getInstance();
+		
 		$flag = substr($this->strField, 0, 2);
 		$node = 'tree_' . $this->strSource . '_' . $this->strField;
 		$xtnode = 'tree_' . $this->strSource . '_' . $this->strName;
+		$nestedModes = array(5);
+		
+		$strKeyField = $this->strKeyField;
+		$strValueField = $this->strValueField;
 
 		// Get the session data and toggle the nodes
 		if (\Input::get($flag.'tg'))
 		{
 			$session[$node][\Input::get($flag.'tg')] = (isset($session[$node][\Input::get($flag.'tg')]) && $session[$node][\Input::get($flag.'tg')] == 1) ? 0 : 1;
-			$this->Session->setData($session);
+			\Session::getInstance()->setData($session);
 			$this->redirect(preg_replace('/(&(amp;)?|\?)'.$flag.'tg=[^& ]*/i', '', \Environment::get('request')));
 		}
 
-		$objPage = $this->Database->prepare("SELECT * FROM ".$this->strSource." WHERE id=?")
-								  ->limit(1)
-								  ->execute($id);
+		$objRow = $objDatabase->prepare("SELECT * FROM ".$this->strSource." WHERE id=?")->limit(1)->execute($id);
 
 		// Return if there is no result
-		if ($objPage->numRows < 1)
+		if ($objRow->numRows < 1)
 		{
 			return '';
 		}
@@ -340,14 +363,13 @@ class TableTree extends \Widget
 		$childs = array();
 
 		// Check whether there are child records
-		if (!$blnNoRecursion)
+		if (!$blnNoRecursion && in_array($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['mode'], $nestedModes) )
 		{
-			$objNodes = $this->Database->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ORDER BY sorting")
+			$objChilds = $objDatabase->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))
 									   ->execute($id);
-
-			if ($objNodes->numRows)
+			if ($objChilds->numRows > 0)
 			{
-				$childs = $objNodes->fetchEach('id');
+				$childs = $objChilds->fetchEach('id');
 			}
 		}
 
@@ -363,20 +385,20 @@ class TableTree extends \Widget
 			$folderAttribute = '';
 			$img = $blnIsOpen ? 'folMinus.gif' : 'folPlus.gif';
 			$alt = $blnIsOpen ? $GLOBALS['TL_LANG']['MSC']['collapseNode'] : $GLOBALS['TL_LANG']['MSC']['expandNode'];
-			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.specialchars($alt).'" onclick="return AjaxRequest.toggleTableTree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\','.$level.')">'.\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
+			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\','.$level.')">'.\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
 		}
 
 		// Set the protection status
-		$objPage->protected = ($objPage->protected || $protectedPage);
+		$objRow->protected = ($objRow->protected || $protectedPage);
 
 		// Add the current page
 		if (!empty($childs))
 		{
-			$return .= \Image::getHtml($this->getPageStatusIcon($objPage), '', $folderAttribute).' <a href="' . $this->addToUrl('node='.$objPage->id) . '" title="'.specialchars($objPage->title . ' (' . $objPage->alias . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.(($objPage->type == 'root') ? '<strong>' : '').$objPage->title.(($objPage->type == 'root') ? '</strong>' : '').'</a></div> <div class="tl_right">';
+			$return .= '<a href="' . $this->addToUrl('node='.$objRow->id) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.'</a></div> <div class="tl_right">';
 		}
 		else
 		{
-			$return .= \Image::getHtml($this->getPageStatusIcon($objPage), '', $folderAttribute).' '.(($objPage->type == 'root') ? '<strong>' : '').$objPage->title.(($objPage->type == 'root') ? '</strong>' : '').'</div> <div class="tl_right">';
+			$return .= $objRow->$strValueField.'</div> <div class="tl_right">';
 		}
 
 		// set fieldtype to checkbox if field is multiple
@@ -401,13 +423,13 @@ class TableTree extends \Widget
 		$return .= '</div><div style="clear:both"></div></li>';
 
 		// Begin a new submenu
-		if (!empty($childs) && ($blnIsOpen || $this->Session->get('pct_tabletree_selector_search') != ''))
+		if (count($childs) > 0 && ($blnIsOpen || $this->Session->get('pct_tabletree_selector_search') != ''))
 		{
 			$return .= '<li class="parent" id="'.$node.'_'.$id.'"><ul class="level_'.$level.'">';
 
-			for ($k=0, $c=count($childs); $k<$c; $k++)
+			for ($k=0; $k<count($childs); $k++)
 			{
-				$return .= $this->renderTree($childs[$k], ($intMargin + $intSpacing), $objPage->protected);
+				$return .= $this->renderTree($childs[$k], ($intMargin + $intSpacing), $objRow->protected);
 			}
 
 			$return .= '</ul></li>';

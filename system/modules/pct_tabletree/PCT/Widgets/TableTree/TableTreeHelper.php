@@ -7,7 +7,7 @@
  * 
  * @copyright	Tim Gatzky 2014, Premium Contao Webworks, Premium Contao Themes
  * @author		Tim Gatzky <info@tim-gatzky.de>
- * @package		pct_customelements
+ * @package		pct_tabltree
  * @link		http://contao.org
  */
 
@@ -31,13 +31,16 @@ class TableTreeHelper extends \Backend
 		switch($strAction)
 		{
 			// Load nodes of the table tree
-			case 'toggleTableTree':
-			case 'loadTableTree':
+			case 'toggleTabletree':
+			case 'loadTabletree':
 				$arrData['strTable'] = $objDC->table;
-				$arrData['strSource'] = \Input::post('source');
 				$arrData['strField'] = $objDC->field;
 				$arrData['id'] = $this->strAjaxName ?: $objDC->id;
 				$arrData['name'] = \Input::post('name');
+				$arrData['tabletree']['source'] = \Input::post('source');
+				$arrData['tabletree']['valueField'] = \Input::post('valueField');
+				$arrData['tabletree']['keyField'] = \Input::post('keyField');
+				$arrData['tabletree']['orderField'] = \Input::post('orderField');
 				$objWidget = new \PCT\Widgets\TableTree($arrData, $objDC);
 				echo $objWidget->generateAjax($this->strAjaxId, \Input::post('field'), intval(\Input::post('level')));
 				exit;
@@ -47,6 +50,9 @@ class TableTreeHelper extends \Backend
 				$intDcaId = $objDC->id = \Input::get('id');
 				$strField = $objDC->field = \Input::post('name');
 				$strSource = $objDC->source = \Input::post('source');
+				$strValueField = $objDC->valueField = \Input::post('valueField');
+				$strKeyField = $objDC->keyField = \Input::post('keyField');
+				$strOrderField = $objDC->orderField = \Input::post('orderField');
 				$objDatabase = \Database::getInstance();
 				
 				// Handle the keys in "edit multiple" mode
@@ -74,9 +80,9 @@ class TableTreeHelper extends \Backend
 				}
 
 				// Load the value
-				if ($intId > 0 && $objDatabase->tableExists($objDC->source))
+				if ($intId > 0 && $objDatabase->tableExists($strSource))
 				{
-					$objRow = $objDatabase->prepare("SELECT * FROM " . $objDC->source . " WHERE id=?")->execute($intId);
+					$objRow = $objDatabase->prepare("SELECT * FROM " . $strSource . " WHERE id=?")->execute($intId);
 					
 					// The record does not exist
 					if ($objRow->numRows < 1)
@@ -86,8 +92,7 @@ class TableTreeHelper extends \Backend
 						die('Bad Request');
 					}
 
-### dyn field here
-					#$varValue = $objRow->title;
+					$varValue = $objRow->$strValueField;
 				}
 				
 				// Load the current active record
@@ -124,15 +129,20 @@ class TableTreeHelper extends \Backend
 				$arrAttribs['name'] = $objDC->field;
 				$arrAttribs['value'] = $varValue;
 				$arrAttribs['strTable'] = $objDC->table;
-				$arrAttribs['strSource'] = $objDC->source;
 				$arrAttribs['strField'] = $strField;
 				$arrAttribs['activeRecord'] = $objDC->activeRecord;
-
+				$arrAttribs['tabletree']['source'] = $strSource;
+				$arrAttribs['tabletree']['valueField'] = $strValueField;
+				$arrAttribs['tabletree']['keyField'] = $strKeyField;
+				$arrAttribs['tabletree']['orderField'] = $strOrderField;
+				
 				$objWidget = new $GLOBALS['BE_FFL']['pct_TableTree']($arrAttribs);
 				echo $objWidget->generate();
+				exit;
 				break;
 		}
 	}
+	
 	
 	/**
 	 * Ajax requests
@@ -142,8 +152,8 @@ class TableTreeHelper extends \Backend
 	{
 		switch($strAction)
 		{
-			case 'toggleTableTree':
-			case 'loadTableTree':
+			case 'toggleTabletree':
+			case 'loadTabletree':
 				$objSession = \Session::getInstance();
 				$this->strAjaxId = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', \Input::post('id'));
 				$this->strAjaxKey = str_replace('_' . $this->strAjaxId, '', \Input::post('id'));

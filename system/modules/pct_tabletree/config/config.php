@@ -14,6 +14,7 @@
 /**
  * Constants
  */
+define(PCT_TABLETREE_PATH, 'system/modules/pct_tabletree');
 define(PCT_TABLETREE_VERSION, '1.0.0');
 
 /**

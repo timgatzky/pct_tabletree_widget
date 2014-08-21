@@ -2,12 +2,14 @@
 /**
  * Toggle the table tree input field
  *
- * @param {object} el    The DOM element
- * @param {string} id    The ID of the target element
- * @param {string} field The field name
- * @param {string} name  The Ajax field name
- * @param {string} source  The source table name
- * @param {int}    level The indentation level
+ * @param object	DOM Element
+ * @param integer	Id of the node
+ * @param string	Name of the dca field
+ * @param string  	The Ajax field name
+ * @param string  	The source table name
+ * @param string	Name of the value Field
+ * @param string	Name of the key Field
+ * @param integer	Level The indentation level
  *
  * @returns {boolean}
  */
@@ -77,10 +79,10 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField,
 	return false;
 }
 
+
 /**
  * Open a selector page in a modal window
- *
- * @param {object} options An optional options object
+ * @param object	An optional options object
  */
 Backend.openModalTabletreeSelector = function(options) 
 {
@@ -139,8 +141,6 @@ Backend.openModalTabletreeSelector = function(options)
 				onRequest: AjaxRequest.displayBox(Contao.lang.loading + ' …'),
 				onSuccess: function(txt, json) {
 					$('ctrl_'+opt.id).getParent('div').set('html', json.content);
-					console.log(json.content);
-					
 					json.javascript && Browser.exec(json.javascript);
 					AjaxRequest.hideBox();
 					window.fireEvent('ajax_change');

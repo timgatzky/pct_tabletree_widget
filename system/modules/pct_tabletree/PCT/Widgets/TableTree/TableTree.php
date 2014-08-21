@@ -334,7 +334,7 @@ class TableTree extends \Widget
 	
 	/**
 	 * Recursively render the table tree
-	 * @param int
+	 * @param integer
 	 * @param integer
 	 * @param boolean
 	 * @param boolean
@@ -455,7 +455,7 @@ class TableTree extends \Widget
 
 
 	/**
-	 * Get the IDs of all parent pages of the selected pages, so they are expanded automatically
+	 * Get the IDs of all parent record ids
 	 * @return array
 	 */
 	protected function getNodes()

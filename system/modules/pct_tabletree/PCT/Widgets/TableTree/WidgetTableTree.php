@@ -79,6 +79,7 @@ class WidgetTableTree extends \Widget
 		{
 			$this->blnIsMultiple = true;
 		}
+		
 		$this->strSource = $arrAttributes['tabletree']['source'];
 		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'title';
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';

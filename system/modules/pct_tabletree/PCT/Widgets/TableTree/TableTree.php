@@ -7,7 +7,7 @@
  * 
  * @copyright	Tim Gatzky 2014, Premium Contao Webworks, Premium Contao Themes
  * @author		Tim Gatzky <info@tim-gatzky.de>
- * @package		pct_customelements
+ * @package		pct_tabletree_widget
  * @link		http://contao.org
  */
 
@@ -38,7 +38,7 @@ class TableTree extends \Widget
 	protected $blnIsMultiple = false;
 	
 	/**
-	 * Array tag nodes
+	 * Array nodes
 	 * @param array
 	 */
 	protected $arrNodes = array();
@@ -70,6 +70,11 @@ class TableTree extends \Widget
 	{
 		$this->import('Database');
 		parent::__construct($arrAttributes);
+		
+		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true)
+		{
+			$this->blnIsMultiple = true;
+		}
 		
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
@@ -114,6 +119,8 @@ class TableTree extends \Widget
 			return '';
 		}
 		
+		$objSession = \Session::getInstance();
+		$objDatabase = \Database::getInstance();
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
 
@@ -123,13 +130,13 @@ class TableTree extends \Widget
 		// Store the keyword
 		if (\Input::post('FORM_SUBMIT') == 'item_selector')
 		{
-			$this->Session->set('pct_tabletree_selector_search', \Input::post('keyword'));
+			$objSession->set('pct_tabletree_selector_search', \Input::post('keyword'));
 			$this->reload();
 		}
 
 		$tree = '';
-		$this->getPathNodes();
-		$for = $this->Session->get('pct_tabletree_selector_search');
+		$this->getNodes();
+		$for = $objSession->get('pct_tabletree_selector_search');
 		$arrIds = array();
 
 		// Search for a specific value
@@ -193,14 +200,14 @@ class TableTree extends \Widget
 		}
 		else
 		{
-			$strNode = $this->Session->get('pct_tabletree_picker');
+			$strNode = $objSession->get('tabletree_node');
 			
 			// Unset the node if it is not within the predefined node set (see #5899)
-			if ($strNode > 0 && is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['rootNodes']))
+			if ($strNode > 0 && is_array($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes']))
 			{
-				if (!in_array($strNode, $this->Database->getChildRecords($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['rootNodes'], 'tl_page')))
+				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes'], 'tl_page')))
 				{
-					$this->Session->remove('pct_tabletree_picker');
+					$this->Session->remove('tabletree_node');
 				}
 			}
 
@@ -211,44 +218,45 @@ class TableTree extends \Widget
 			}
 
 			// Root nodes (breadcrumb menu)
-			if (!empty($GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['root']))
+			if (!empty($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root']))
 			{
-				$nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['root']);
-
-				foreach ($nodes as $node)
-				{
-					$tree .= $this->renderTree($node, -20);
-				}
+			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root'], $this->strSource);
+			   foreach ($nodes as $node)
+			   {
+			   		$tree .= $this->renderTree($node, -20);
+			   }
 			}
-
+			
 			// Predefined node set (see #3563)
 			elseif (is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['rootNodes']))
 			{
-			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['rootNodes']);
-			
+			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes'], $this->strSource);
 			   foreach ($nodes as $node)
 			   {
-			   	$tree .= $this->renderPagetree($node, -20);
+			   		$tree .= $this->renderTree($node, -20);
 			   }
 			}
 
 			// Show all pages to admins
 			elseif ($this->User->isAdmin)
 			{
-				// hier einträge beschränken
-				$objRows = \Database::getInstance()->prepare("SELECT id FROM ".$this->strSource."".($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
-				
+				// check if table contains a pid field
+				$hasPid = false;
+				if($objDatabase->fieldExists('pid',$this->strSource))
+				{
+					$hasPid = true;
+				}
+				$objRows = $objDatabase->prepare("SELECT id FROM ".$this->strSource.($hasPid == true ? " WHERE pid=? " : "").($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
 				while ($objRows->next())
 				{
 					$tree .= $this->renderTree($objRows->id, -20);
 				}
 			}
-
-			// Show only mounted pages to regular users
+			// Show only mounted records to regular users
 			else
 			{
-				$nodes = $this->eliminateNestedPages($this->User->pagemounts);
-
+				$nodes = $this->eliminateNestedPages($this->User->pagemounts, $this->strSource);
+				
 				foreach ($nodes as $node)
 				{
 					$tree .= $this->renderTree($node, -20);
@@ -257,7 +265,7 @@ class TableTree extends \Widget
 		}
 		
 		// Select all checkboxes
-		if ($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['fieldType'] == 'checkbox')
+		if ($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['eval']['fieldType'] == 'checkbox')
 		{
 			$strReset = "\n" . '    <li class="tl_folder"><div class="tl_left">&nbsp;</div> <div class="tl_right"><label for="check_all_' . $this->strId . '" class="tl_change_selected">' . $GLOBALS['TL_LANG']['MSC']['selectAll'] . '</label> <input type="checkbox" id="check_all_' . $this->strId . '" class="tl_tree_checkbox" value="" onclick="Backend.toggleCheckboxGroup(this,\'' . $this->strName . '\')"></div><div style="clear:both"></div></li>';
 		}
@@ -269,7 +277,7 @@ class TableTree extends \Widget
 
 		// Return the tree
 		return '<ul class="tl_listing tree_view picker_selector'.(($this->strClass != '') ? ' ' . $this->strClass : '').'" id="'.$this->strId.'">
-    <li class="tl_folder_top"><div class="tl_left">'.\Image::getHtml($GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['icon'] ?: 'pagemounts.gif').' '.($GLOBALS['TL_CONFIG']['websiteTitle'] ?: 'Contao Open Source CMS').'</div> <div class="tl_right">&nbsp;</div><div style="clear:both"></div></li><li class="parent" id="'.$this->strId.'_parent"><ul>'.$tree.$strReset.'
+    <li class="tl_folder_top"><div class="tl_left">'.\Image::getHtml($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['icon'] ?: 'pagemounts.gif').' '.($GLOBALS['TL_CONFIG']['websiteTitle'] ?: 'Contao Open Source CMS').'</div> <div class="tl_right">&nbsp;</div><div style="clear:both"></div></li><li class="parent" id="'.$this->strId.'_parent"><ul>'.$tree.$strReset.'
   </ul></li></ul>';
 	}
 
@@ -281,34 +289,38 @@ class TableTree extends \Widget
 	 * @param integer
 	 * @return string
 	 */
-	public function generateAjax($id, $strField, $level)
+	public function generateAjax($id, $strField, $strValueField, $level)
 	{
-		if (!\Environment::get('isAjaxRequest'))
+		if(!\Environment::get('isAjaxRequest'))
 		{
 			return '';
 		}
-
+		
+		$this->strId = $id;
 		$this->strField = $strField;
-		#$this->loadDataContainer($this->strTable);
-		#if (!$this->Database->fieldExists($this->strField, $this->strSource))
-		#{
-		#	return;
-		#}
-	#	$objField = $this->Database->prepare("SELECT " . $this->strField . " FROM " . $this->strSource . " WHERE id=?")
-	#									   ->limit(1)
-	#									   ->execute($this->strId);
-	#
-	#	if ($objField->numRows)
-	#	{
-	#		$this->varValue = deserialize($objField->{$this->strField});
-	#	}
+		$this->strValueField = $strValueField;
+		
+		$objDatabase = \Database::getInstance();
+		$this->loadDataContainer($this->strSource);
+		$this->loadDataContainer($this->strTable);
+		
+		// check if regular dca field exists and if value field in source table exists
+		if(!$objDatabase->fieldExists($this->strField, $this->strTable) && !$objDatabase->fieldExists($this->strValueField, $this->strSource))
+		{
+		   return;
+		}
+		$objField = $objDatabase->prepare("SELECT ".$this->strValueField." FROM ".$this->strSource." WHERE id=?")->limit(1)->execute($this->strId);
+		if($objField->numRows > 0)
+		{
+		    $this->varValue = deserialize($objField->{$this->strValueField});
+		}
 
-		#$this->getPathNodes();
+		$this->getNodes();
+		
 		// Load the requested nodes
 		$tree = '';
 		$level = $level * 30;
-		$objRows = \Database::getInstance()->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ORDER BY sorting")
-								  ->execute($id);
+		$objRows = \Database::getInstance()->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? "ORDER BY ".$this->strOrderField : ""))->execute($id);
 
 		while ($objRows->next())
 		{
@@ -328,11 +340,12 @@ class TableTree extends \Widget
 	 * @param boolean
 	 * @return string
 	 */
-	protected function renderTree($id, $intMargin, $protectedPage=false, $blnNoRecursion=false)
+	protected function renderTree($id, $intMargin, $protectedRow=false, $blnNoRecursion=false)
 	{
 		static $session;
-		$session = \Session::getInstance()->getData();
+		$objSession = \Session::getInstance();
 		$objDatabase = \Database::getInstance();
+		$session = $objSession->getData();
 		
 		$flag = substr($this->strField, 0, 2);
 		$node = 'tree_' . $this->strSource . '_' . $this->strField;
@@ -341,12 +354,13 @@ class TableTree extends \Widget
 		
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
+		$strOrderField = $this->strOrderField;
 
 		// Get the session data and toggle the nodes
 		if (\Input::get($flag.'tg'))
 		{
 			$session[$node][\Input::get($flag.'tg')] = (isset($session[$node][\Input::get($flag.'tg')]) && $session[$node][\Input::get($flag.'tg')] == 1) ? 0 : 1;
-			\Session::getInstance()->setData($session);
+			$objSession->setData($session);
 			$this->redirect(preg_replace('/(&(amp;)?|\?)'.$flag.'tg=[^& ]*/i', '', \Environment::get('request')));
 		}
 
@@ -385,20 +399,21 @@ class TableTree extends \Widget
 			$folderAttribute = '';
 			$img = $blnIsOpen ? 'folMinus.gif' : 'folPlus.gif';
 			$alt = $blnIsOpen ? $GLOBALS['TL_LANG']['MSC']['collapseNode'] : $GLOBALS['TL_LANG']['MSC']['expandNode'];
-			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\','.$level.')">'.\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
+			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\',\''.$this->strValueField.'\',\''.$this->strKeyField.'\','.$level.')">'.\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
 		}
 
 		// Set the protection status
-		$objRow->protected = ($objRow->protected || $protectedPage);
+		$objRow->protected = ($objRow->protected || $protectedRow);
 
-		// Add the current page
-		if (!empty($childs))
+		// Add the current row
+		if (count($childs) > 0)
 		{
-			$return .= '<a href="' . $this->addToUrl('node='.$objRow->id) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.'</a></div> <div class="tl_right">';
+			$return .= '<a href="' . $this->addToUrl('node='.$objRow->id) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$objRow->$strValueField.'</a></div> <div class="tl_right">';
 		}
 		else
 		{
 			$return .= $objRow->$strValueField.'</div> <div class="tl_right">';
+			#\FB::log($objRow->$strValueField);
 		}
 
 		// set fieldtype to checkbox if field is multiple
@@ -443,7 +458,7 @@ class TableTree extends \Widget
 	 * Get the IDs of all parent pages of the selected pages, so they are expanded automatically
 	 * @return array
 	 */
-	protected function getPathNodes()
+	protected function getNodes()
 	{
 		if (!$this->varValue)
 		{

@@ -76,9 +76,10 @@ class PageTableTree extends \Backend
 		// Define the current ID
 		define('CURRENT_ID', (\Input::get('table') ? \Session::getInstance()->get('CURRENT_ID') : \Input::get('id')));
 		
-		$this->loadDataContainer($strTable);
-		$strDriver = 'DC_' . $GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'];
-		$objDca = new $strDriver($strTable);
+		$this->loadDataContainer($strSource);
+		
+		$strDriver = 'DC_' . ($GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] ? $GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] : 'table');
+		$objDca = new $strDriver($strSource);
 		
 		$objDca->valueField = $strValueField;
 		$objDca->keyField = $strKeyField;
@@ -117,6 +118,7 @@ class PageTableTree extends \Backend
 		$this->Template->action = ampersand(\Environment::get('request'));
 		#$this->Template->manager = $GLOBALS['TL_LANG']['MSC']['pct_tableTreeManager'];
 		#$this->Template->managerHref = 'contao/main.php?do=pct_customelements_tags&amp;popup=1';
+		### custom breadcrumb 
 		$this->Template->breadcrumb = $GLOBALS['TL_DCA'][$strSource]['list']['sorting']['breadcrumb'];
 
 		$this->Template->value = $this->Session->get('pct_tabletree_selector_search');

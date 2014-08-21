@@ -42,7 +42,7 @@ class TableTreeHelper extends \Backend
 				$arrData['tabletree']['keyField'] = \Input::post('keyField');
 				$arrData['tabletree']['orderField'] = \Input::post('orderField');
 				$objWidget = new \PCT\Widgets\TableTree($arrData, $objDC);
-				echo $objWidget->generateAjax($this->strAjaxId, \Input::post('field'), intval(\Input::post('level')));
+				echo $objWidget->generateAjax($this->strAjaxId, \Input::post('field'), \Input::post('valueField'), intval(\Input::post('level')));
 				exit;
 				break;
 			case 'reloadTabletree':

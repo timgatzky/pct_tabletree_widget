@@ -11,7 +11,7 @@
  *
  * @returns {boolean}
  */
-AjaxRequest.toggleTabletree = function (el, id, field, name, source, level) 
+AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField, keyField, level) 
 {
 	el.blur();
 	Backend.getScrollOffset();
@@ -44,7 +44,8 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, level)
 		field: el,
 		evalScripts: true,
 		onRequest: AjaxRequest.displayBox(Contao.lang.loading + ' …'),
-		onSuccess: function(txt) {
+		onSuccess: function(txt) 
+		{
 			var li = new Element('li', {
 				'id': id,
 				'class': 'parent',
@@ -71,7 +72,7 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, level)
 
 			// HOOK
 			window.fireEvent('ajax_change');
-			}
+		}
 	}).post({'action':'loadTabletree', 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'valueField':valueField, 'keyField':keyField, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
 	return false;
 }

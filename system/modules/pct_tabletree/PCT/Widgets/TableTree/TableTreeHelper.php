@@ -136,7 +136,7 @@ class TableTreeHelper extends \Backend
 				$arrAttribs['tabletree']['keyField'] = $strKeyField;
 				$arrAttribs['tabletree']['orderField'] = $strOrderField;
 				
-				$objWidget = new $GLOBALS['BE_FFL']['pct_TableTree']($arrAttribs);
+				$objWidget = new $GLOBALS['BE_FFL']['pct_tabletree']($arrAttribs);
 				echo $objWidget->generate();
 				exit;
 				break;

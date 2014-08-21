@@ -20,7 +20,7 @@ define(PCT_TABLETREE_VERSION, '1.0.0');
 /**
  * Back end form fields
  */
-$GLOBALS['BE_FFL']['pct_TableTree'] = 'PCT\Widgets\WidgetTableTree';
+$GLOBALS['BE_FFL']['pct_tabletree'] = 'PCT\Widgets\WidgetTableTree';
 
 /**
  * Hooks

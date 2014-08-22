@@ -145,7 +145,7 @@ Backend.openModalTabletreeSelector = function(options)
 					AjaxRequest.hideBox();
 					window.fireEvent('ajax_change');
 				}
-			}).post({'action':act, 'name':opt.id,'source':options.source, 'valueField':options.valueField, 'keyField':options.keyField, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
+			}).post({'action':act, 'loadCustomElementFields':1, 'name':opt.id,'source':options.source, 'valueField':options.valueField, 'keyField':options.keyField, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
 		}
 		this.hide();
 	});

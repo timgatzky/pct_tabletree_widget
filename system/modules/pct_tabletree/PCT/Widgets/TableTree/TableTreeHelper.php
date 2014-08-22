@@ -87,7 +87,7 @@ class TableTreeHelper extends \Backend
 					// The record does not exist
 					if ($objRow->numRows < 1)
 					{
-						$this->log('A record with the ID "' . $intId . '" does not exist in table "' . $objDC->source . '"', __METHOD__, TL_ERROR);
+						$this->log('A record with the ID "' . $intId . '" does not exist in table "' . $strSource . '"', __METHOD__, TL_ERROR);
 						header('HTTP/1.1 400 Bad Request');
 						die('Bad Request');
 					}
@@ -98,7 +98,7 @@ class TableTreeHelper extends \Backend
 				// Load the current active record
 				if($intDcaId > 0 && $objDatabase->tableExists($objDC->table))
 				{
-					$objActiveRecord = $objDatabase->prepare("SELECT * FROM " . $objDC->table . " WHERE id=?")->execute($intId);
+					$objActiveRecord = $objDatabase->prepare("SELECT * FROM " . $objDC->table . " WHERE id=?")->execute($intDcaId);
 					$objDC->activeRecord = $objActiveRecord;
 				}
 				

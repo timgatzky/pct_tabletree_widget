@@ -45,6 +45,12 @@ class WidgetTableTree extends \Widget
 	protected $blnIsMultiple = false;
 	
 	/**
+	 * Sortable flag
+	 * @var boolean
+	 */
+	protected $blnIsSortable = false;
+	
+	/**
 	 * Source table
 	 * @var string
 	 */
@@ -83,6 +89,13 @@ class WidgetTableTree extends \Widget
 		$this->strSource = $arrAttributes['tabletree']['source'];
 		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'title';
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
+		$this->strOrderField = $arrAttributes['tabletree']['orderField'];
+		
+		// flag as sortable
+		if($arrAttributes['sortable'] || $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['orderField'])
+		{
+			$this->blnIsSortable = true;
+		}
 	}
 
 
@@ -121,10 +134,8 @@ class WidgetTableTree extends \Widget
 	{
 		$arrSet = array();
 		$arrValues = array();
-		$blnHasOrder = ($this->strOrderField != '' && is_array($this->{$this->strOrderField}));
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
-
 		if (!empty($this->varValue)) // Can be an array
 		{
 			if(!is_array($this->varValue))
@@ -142,39 +153,54 @@ class WidgetTableTree extends \Widget
 					$arrValues[$objRows->id] = $objRows->$strValueField . ' (' . $objRows->id . ')';
 				}
 			}
-
-			// Apply a custom sort order
-			#if ($blnHasOrder)
-			#{
-			#	$arrNew = array();
-			#
-			#	foreach ($this->{$this->strOrderField} as $i)
-			#	{
-			#		if (isset($arrValues[$i]))
-			#		{
-			#			$arrNew[$i] = $arrValues[$i];
-			#			unset($arrValues[$i]);
-			#		}
-			#	}
-			#
-			#	if (!empty($arrValues))
-			#	{
-			#		foreach ($arrValues as $k=>$v)
-			#		{
-			#			$arrNew[$k] = $v;
-			#		}
-			#	}
-			#
-			#	$arrValues = $arrNew;
-			#	unset($arrNew);
-			#}
+			
+			// Custom order
+			if($this->blnIsSortable)
+			{	
+				// Apply a custom sort by real dca order field like orderSRC
+				if($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['orderField'])
+				{
+					$strOrderField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['orderField'];
+					$arrNew = array();
+					foreach ($this->$strOrderField as $i)
+					{
+						if (isset($arrValues[$i]))
+						{
+							$arrNew[$i] = $arrValues[$i];
+							unset($arrValues[$i]);
+						}
+					}
+	
+					if (!empty($arrValues))
+					{
+						foreach ($arrValues as $k=>$v)
+						{
+							$arrNew[$k] = $v;
+						}
+					}
+	
+					$arrValues = $arrNew;
+					unset($arrNew);
+				}
+				else
+				{
+					// Apply a custom sort order by stored or submitted value order
+					$tmp = array();
+					foreach($this->varValue as $i => $id)
+					{
+						$tmp[$id] = $arrValues[$id];
+					}
+					$arrValues = $tmp;
+					unset($tmp);
+				}
+			}
 		}
 
-		$return = '<input type="hidden" name="'.$this->strName.'" id="ctrl_'.$this->strId.'" value="'.implode(',', $arrSet).'">' . ($blnHasOrder ? '
+		$return = '<input type="hidden" name="'.$this->strName.'" id="ctrl_'.$this->strId.'" value="'.implode(',', $arrSet).'">' . ($this->blnIsSortable ? '
   <input type="hidden" name="'.$this->strOrderName.'" id="ctrl_'.$this->strOrderId.'" value="'.$this->{$this->strOrderField}.'">' : '') . '
-  <div class="selector_container">' . (($blnHasOrder && count($arrValues) > 1) ? '
+  <div class="selector_container">' . (($this->blnIsSortable && count($arrValues) > 1) ? '
     <p class="sort_hint">' . $GLOBALS['TL_LANG']['MSC']['dragItemsHint'] . '</p>' : '') . '
-    <ul id="sort_'.$this->strId.'" class="'.($blnHasOrder ? 'sortable' : '').'">';
+    <ul id="sort_'.$this->strId.'" class="'.($this->blnIsSortable ? 'sortable' : '').'">';
 
 		foreach ($arrValues as $k=>$v)
 		{

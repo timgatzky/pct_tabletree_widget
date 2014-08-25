@@ -75,7 +75,7 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField,
 			// HOOK
 			window.fireEvent('ajax_change');
 		}
-	}).post({'action':'loadTabletree', 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'valueField':valueField, 'keyField':keyField, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
+	}).post({'action':'loadTabletree', 'loadCustomElementFields':1, 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'valueField':valueField, 'keyField':keyField, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
 	return false;
 }
 

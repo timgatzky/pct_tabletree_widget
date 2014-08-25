@@ -81,7 +81,7 @@ class WidgetTableTree extends \Widget
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
 		
-		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true)
+		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true || $arrAttributes['eval']['fieldType'] == 'checkbox' || $arrAttributes['eval']['multiple'] == true)
 		{
 			$this->blnIsMultiple = true;
 		}
@@ -116,12 +116,12 @@ class WidgetTableTree extends \Widget
 		}
 		elseif (strpos($varInput, ',') === false)
 		{
-				return $this->blnIsMultiple ? array(intval($varInput)) : intval($varInput);
+			return $this->blnIsMultiple ? array(intval($varInput)) : intval($varInput);
 		}
 		else
 		{
-				$arrValue = array_map('intval', array_filter(explode(',', $varInput)));
-				return $this->blnIsMultiple ? $arrValue : $arrValue[0];
+			$arrValue = array_map('intval', array_filter(explode(',', $varInput)));
+			return $this->blnIsMultiple ? $arrValue : $arrValue[0];
 		}
 	}
 
@@ -145,7 +145,7 @@ class WidgetTableTree extends \Widget
 			
 			$objRows = \Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE id IN(".implode(',',$this->varValue).")");
 			
-			if ($objRows !== null)
+			if ($objRows->numRows > 0)
 			{
 				while ($objRows->next())
 				{

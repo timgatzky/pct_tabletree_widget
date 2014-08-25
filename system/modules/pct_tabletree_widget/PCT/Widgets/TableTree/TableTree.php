@@ -265,7 +265,7 @@ class TableTree extends \Widget
 		}
 		
 		// Select all checkboxes
-		if ($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['eval']['fieldType'] == 'checkbox')
+		if ($this->blnIsMultiple)
 		{
 			$strReset = "\n" . '    <li class="tl_folder"><div class="tl_left">&nbsp;</div> <div class="tl_right"><label for="check_all_' . $this->strId . '" class="tl_change_selected">' . $GLOBALS['TL_LANG']['MSC']['selectAll'] . '</label> <input type="checkbox" id="check_all_' . $this->strId . '" class="tl_tree_checkbox" value="" onclick="Backend.toggleCheckboxGroup(this,\'' . $this->strName . '\')"></div><div style="clear:both"></div></li>';
 		}
@@ -417,7 +417,7 @@ class TableTree extends \Widget
 		}
 
 		// set fieldtype to checkbox if field is multiple
-		if($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['multiple'])
+		if($this->blnIsMultiple)
 		{
 			$GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['fieldType'] = 'checkbox';
 		}

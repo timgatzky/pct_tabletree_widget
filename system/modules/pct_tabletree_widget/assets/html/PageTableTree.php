@@ -77,10 +77,9 @@ class PageTableTree extends \Backend
 		define('CURRENT_ID', (\Input::get('table') ? \Session::getInstance()->get('CURRENT_ID') : \Input::get('id')));
 		
 		$this->loadDataContainer($strSource);
-		
-		$strDriver = 'DC_' . ($GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] ? $GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] : 'table');
+		$this->loadDataContainer($strTable);
+		$strDriver = 'DC_' . ($GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] ? $GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] : 'Table');
 		$objDca = new $strDriver($strSource);
-		
 		$objDca->valueField = $strValueField;
 		$objDca->keyField = $strKeyField;
 		
@@ -91,23 +90,22 @@ class PageTableTree extends \Backend
 		}
 		
 		\Session::getInstance()->set('pctTableTreeRef', \Environment::get('request'));
-
-		// Prepare the widget
-		$objTableTree = new \PCT\Widgets\TableTree(array(
-			'strId'    => $strField,
-			'strTable' => $strTable,
-			'tabletree'=> array
-			(
-				'source'		=> $strSource,
-				'valueField'	=> $strValueField,
-				'keyField'		=> \Input::get('keyField') ? \Input::get('keyField') : '',
-			),
-			'strField' => $strField,
-			'strName'  => $strField,
-			'varValue' => array_filter(explode(',', \Input::get('value')))
-		), $objDca);
 		
-		$this->Template->main = $objTableTree->generate();
+		// Build the attributes based on the "eval" array
+		$arrAttribs = $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval'];
+		$arrAttribs['id'] = $objDC->field;
+		$arrAttribs['name'] = $objDC->field;
+		$arrAttribs['value'] = array_filter(explode(',', \Input::get('value')));
+		$arrAttribs['strTable'] = $objDC->table;
+		$arrAttribs['strField'] = $strField;
+		$arrAttribs['activeRecord'] = $objDC->activeRecord;
+		$arrAttribs['tabletree']['source'] = $strSource;
+		$arrAttribs['tabletree']['valueField'] = $strValueField;
+		$arrAttribs['tabletree']['keyField'] = $strKeyField;
+		$arrAttribs['tabletree']['orderField'] = $strOrderField;
+		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDca);
+		
+		$this->Template->main = $objWidget->generate();
 		$this->Template->theme = \Backend::getTheme();
 		$this->Template->base = \Environment::get('base');
 		$this->Template->language = $GLOBALS['TL_LANGUAGE'];
@@ -118,7 +116,6 @@ class PageTableTree extends \Backend
 		$this->Template->action = ampersand(\Environment::get('request'));
 		#$this->Template->manager = $GLOBALS['TL_LANG']['MSC']['pct_tableTreeManager'];
 		#$this->Template->managerHref = 'contao/main.php?do=pct_customelements_tags&amp;popup=1';
-		### custom breadcrumb 
 		$this->Template->breadcrumb = $GLOBALS['TL_DCA'][$strSource]['list']['sorting']['breadcrumb'];
 
 		$this->Template->value = $this->Session->get('pct_tabletree_selector_search');

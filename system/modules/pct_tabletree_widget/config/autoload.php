@@ -11,7 +11,7 @@
  * @link		http://contao.org
  */
 
-$path = 'system/modules/pct_tabletree';
+$path = 'system/modules/pct_tabletree_widget';
 
 /**
  * Register the namespaces

@@ -304,11 +304,18 @@ class TableTree extends \Widget
 		$this->loadDataContainer($this->strSource);
 		$this->loadDataContainer($this->strTable);
 		
+		// check if field is multiple
+		if($GLOBALS['TL_DCA'][$this->strTable]['fields'][$strField]['eval']['fieldType'] == 'checkbox' || $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strField]['eval']['multiple'])
+		{
+			$this->blnIsMultiple = true;
+		}
+		
 		// check if regular dca field exists and if value field in source table exists
 		if(!$objDatabase->fieldExists($this->strField, $this->strTable) && !$objDatabase->fieldExists($this->strValueField, $this->strSource))
 		{
 		   return;
 		}
+		
 		$objField = $objDatabase->prepare("SELECT ".$this->strValueField." FROM ".$this->strSource." WHERE id=?")->limit(1)->execute($this->strId);
 		if($objField->numRows > 0)
 		{

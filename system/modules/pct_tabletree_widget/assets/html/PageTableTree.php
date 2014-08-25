@@ -78,15 +78,18 @@ class PageTableTree extends \Backend
 		
 		$this->loadDataContainer($strSource);
 		$this->loadDataContainer($strTable);
+		
 		$strDriver = 'DC_' . ($GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] ? $GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] : 'Table');
-		$objDca = new $strDriver($strSource);
-		$objDca->valueField = $strValueField;
-		$objDca->keyField = $strKeyField;
+		$objDC = new $strDriver($strSource);
+		$objDC->valueField = $strValueField;
+		$objDC->keyField = $strKeyField;
+		$objDC->field = $strField;
+		$objDC->table = $strTable;
 		
 		// AJAX request
 		if ($_POST && \Environment::get('isAjaxRequest'))
 		{
-		   $this->objAjax->executePostActions($objDca);
+		   $this->objAjax->executePostActions($objDC);
 		}
 		
 		\Session::getInstance()->set('pctTableTreeRef', \Environment::get('request'));
@@ -103,7 +106,7 @@ class PageTableTree extends \Backend
 		$arrAttribs['tabletree']['valueField'] = $strValueField;
 		$arrAttribs['tabletree']['keyField'] = $strKeyField;
 		$arrAttribs['tabletree']['orderField'] = $strOrderField;
-		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDca);
+		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDC);
 		
 		$this->Template->main = $objWidget->generate();
 		$this->Template->theme = \Backend::getTheme();

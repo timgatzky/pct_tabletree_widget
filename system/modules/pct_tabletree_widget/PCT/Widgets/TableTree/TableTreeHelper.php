@@ -36,7 +36,7 @@ class TableTreeHelper extends \Backend
 				$arrData['strTable'] = $objDC->table;
 				$arrData['strField'] = $objDC->field;
 				$arrData['id'] = $this->strAjaxName ?: $objDC->id;
-				$arrData['name'] = \Input::post('name');
+				$arrData['name'] = $objDC->field;
 				$arrData['tabletree']['source'] = \Input::post('source');
 				$arrData['tabletree']['valueField'] = \Input::post('valueField');
 				$arrData['tabletree']['keyField'] = \Input::post('keyField');

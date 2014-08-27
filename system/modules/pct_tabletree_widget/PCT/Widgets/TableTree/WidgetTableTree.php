@@ -108,8 +108,8 @@ class WidgetTableTree extends \Widget
 			{
 				$roots = explode(',', $arrAttributes['tabletree']['roots']);
 			}
-			\Session::getInstance()->set('pct_tabletree_roots',array($this->name => $roots));
 		}
+		\Session::getInstance()->set('pct_tabletree_roots',array($this->name => $roots));
 	}
 
 

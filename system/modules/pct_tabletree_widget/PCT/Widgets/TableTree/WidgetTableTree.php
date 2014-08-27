@@ -96,7 +96,7 @@ class WidgetTableTree extends \Widget
 		{
 			$this->blnIsSortable = true;
 		}
-		
+			
 		// store root nodes in session
 		if(isset($arrAttributes['tabletree']['roots']))
 		{
@@ -108,8 +108,7 @@ class WidgetTableTree extends \Widget
 			{
 				$roots = explode(',', $arrAttributes['tabletree']['roots']);
 			}
-			
-			\Session::getInstance()->set('pct_tabletree_roots',$roots);
+			\Session::getInstance()->set('pct_tabletree_roots',array($this->name => $roots));
 		}
 	}
 

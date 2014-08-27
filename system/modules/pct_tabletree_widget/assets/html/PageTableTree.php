@@ -106,6 +106,8 @@ class PageTableTree extends \Backend
 		$arrAttribs['tabletree']['valueField'] = $strValueField;
 		$arrAttribs['tabletree']['keyField'] = $strKeyField;
 		$arrAttribs['tabletree']['orderField'] = $strOrderField;
+		// get root nodes from session
+		$arrAttribs['tabletree']['roots'] = \Session::getInstance()->get('pct_tabletree_roots');
 		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDC);
 		
 		$this->Template->main = $objWidget->generate();

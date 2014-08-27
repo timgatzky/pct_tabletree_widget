@@ -42,6 +42,12 @@ class TableTree extends \Widget
 	 * @param array
 	 */
 	protected $arrNodes = array();
+	
+	/**
+	 * Root nodes array
+	 * @var array
+	 */
+	protected $arrRootNodes = array();
 
 	/**
 	 * Source table
@@ -60,7 +66,7 @@ class TableTree extends \Widget
 	 * @var string
 	 */
 	protected $strKeyField = '';
-
+	
 
 	/**
 	 * Load the database object
@@ -83,6 +89,19 @@ class TableTree extends \Widget
 		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'title';
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
 		$this->strOrderField = strlen($arrAttributes['tabletree']['orderField']) > 0 ? $arrAttributes['tabletree']['orderField'] : 'sorting';
+		
+		// set roots
+		if(isset($arrAttributes['tabletree']['roots']))
+		{
+			if(is_array($arrAttributes['tabletree']['roots']))
+			{
+				$this->arrRootNodes = $arrAttributes['tabletree']['roots'];
+			}
+			else
+			{
+				$this->arrRootNodes = explode(',', $arrAttributes['tabletree']['roots']);
+			}
+		}
 	}
 	
 	
@@ -205,21 +224,16 @@ class TableTree extends \Widget
 			// Unset the node if it is not within the predefined node set (see #5899)
 			if ($strNode > 0 && is_array($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes']))
 			{
-				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes'], 'tl_page')))
+				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes'], $this->strSource)))
 				{
 					$this->Session->remove('tabletree_node');
 				}
 			}
 
-			// Add the breadcrumb menu
-			if (\Input::get('do') != 'page')
-			{
-				#\Backend::addBreadcrumb();
-			}
-
 			// Root nodes (breadcrumb menu)
 			if (!empty($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root']))
 			{
+			   
 			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root'], $this->strSource);
 			   foreach ($nodes as $node)
 			   {
@@ -236,7 +250,15 @@ class TableTree extends \Widget
 			   		$tree .= $this->renderTree($node, -20);
 			   }
 			}
-
+			// custom root nodes
+			elseif(count($this->arrRootNodes) > 0)
+			{
+				$nodes = $this->eliminateNestedPages($this->arrRootNodes, $this->strSource);
+				foreach ($nodes as $node)
+				{
+					$tree .= $this->renderTree($node, -20);
+				}
+			}
 			// Show all pages to admins
 			elseif ($this->User->isAdmin)
 			{
@@ -252,16 +274,12 @@ class TableTree extends \Widget
 					$tree .= $this->renderTree($objRows->id, -20);
 				}
 			}
-			// Show only mounted records to regular users
 			else
 			{
-				$nodes = $this->eliminateNestedPages($this->User->pagemounts, $this->strSource);
-				
-				foreach ($nodes as $node)
-				{
-					$tree .= $this->renderTree($node, -20);
-				}
+				// do nothing
 			}
+			
+			
 		}
 		
 		// Select all checkboxes

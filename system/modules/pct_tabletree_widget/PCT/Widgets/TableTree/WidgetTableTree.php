@@ -96,6 +96,21 @@ class WidgetTableTree extends \Widget
 		{
 			$this->blnIsSortable = true;
 		}
+		
+		// store root nodes in session
+		if(isset($arrAttributes['tabletree']['roots']))
+		{
+			if(is_array($arrAttributes['tabletree']['roots']))
+			{
+				$roots = $arrAttributes['tabletree']['roots'];
+			}
+			else
+			{
+				$roots = explode(',', $arrAttributes['tabletree']['roots']);
+			}
+			
+			\Session::getInstance()->set('pct_tabletree_roots',$roots);
+		}
 	}
 
 

@@ -1,1 +1,3 @@
 ### Version 1.0.0
+Added: Root nodes feature
+Added: English languages files

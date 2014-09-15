@@ -2,3 +2,4 @@
 Added: Root nodes feature
 Added: English languages files
 Update: Merge field defintion with dca array because contao does not pass individual evaluation arrays to widgets
+Update: License agreement

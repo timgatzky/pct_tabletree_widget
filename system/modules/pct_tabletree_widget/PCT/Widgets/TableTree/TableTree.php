@@ -7,8 +7,9 @@
  * 
  * @copyright	Tim Gatzky 2014, Premium Contao Webworks, Premium Contao Themes
  * @author		Tim Gatzky <info@tim-gatzky.de>
- * @package		pct_tabletree_widget
+ * @package		pct_tabletree
  * @link		http://contao.org
+ * @license     LGPL
  */
 
 

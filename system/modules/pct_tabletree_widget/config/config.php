@@ -9,6 +9,7 @@
  * @author		Tim Gatzky <info@tim-gatzky.de>
  * @package		pct_tabletree
  * @link		http://contao.org
+ * @license     LGPL
  */
 
 /**

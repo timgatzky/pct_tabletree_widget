@@ -128,7 +128,7 @@ class WidgetTableTree extends \Widget
 	 */
 	protected function validator($varInput)
 	{
-		if ($varInput == '')
+		if (empty($varInput))
 		{
 			if ($this->mandatory)
 			{

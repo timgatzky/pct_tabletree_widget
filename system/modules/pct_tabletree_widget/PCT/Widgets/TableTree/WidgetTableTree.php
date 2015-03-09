@@ -171,8 +171,8 @@ class WidgetTableTree extends \Widget
 			{
 				while ($objRows->next())
 				{
-					$arrSet[] = $objRows->id;
-					$arrValues[$objRows->id] = $objRows->$strValueField . ' (' . $objRows->id . ')';
+					$arrSet[] = $objRows->{$strKeyField};
+					$arrValues[$objRows->{$strKeyField}] = $objRows->$strValueField . ' (' . $objRows->{$strKeyField} . ')';
 				}
 			}
 			

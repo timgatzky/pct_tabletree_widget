@@ -85,7 +85,7 @@ class TableTree extends \Widget
 		
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
-		\FB::log($arrAttributes);
+		
 		// get field defintion from datacontainer since contao does not pass custom evalulation arrays to widgets
 		if(!is_array($arrAttributes['tabletree']))
 		{
@@ -209,9 +209,9 @@ class TableTree extends \Widget
 					{
 						// Show only mounted pages to regular users
 						## tl_page only
-						if (count(array_intersect($this->User->pagemounts, $this->Database->getParentRecords($objRoot->id, $this->strSource))) > 0)
+						if (count(array_intersect($this->User->pagemounts, $this->Database->getParentRecords($objRoot->{$strKeyField}, $this->strSource))) > 0)
 						{
-							$arrRoot[] = $objRoot->id;
+							$arrRoot[] = $objRoot->{$strKeyField};
 						}
 					}
 
@@ -276,10 +276,10 @@ class TableTree extends \Widget
 				{
 					$hasPid = true;
 				}
-				$objRows = $objDatabase->prepare("SELECT id FROM ".$this->strSource.($hasPid == true ? " WHERE pid=? " : "").($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
+				$objRows = $objDatabase->prepare("SELECT id,".$strKeyField." FROM ".$this->strSource.($hasPid == true ? " WHERE pid=? " : "").($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
 				while ($objRows->next())
 				{
-					$tree .= $this->renderTree($objRows->id, -20);
+					$tree .= $this->renderTree($objRows->{$strKeyField}, -20);
 				}
 			}
 			else
@@ -312,19 +312,21 @@ class TableTree extends \Widget
 	 * Generate a particular subpart of the page tree and return it as HTML string
 	 * @param integer
 	 * @param string
+	 * @param string
 	 * @param integer
 	 * @return string
 	 */
-	public function generateAjax($id, $strField, $strValueField, $level)
+	public function generateAjax($id, $strField, $strValueField, $strKeyField, $level)
 	{
 		if(!\Environment::get('isAjaxRequest'))
 		{
 			return '';
 		}
 		
-		$this->strId = $id;
+		$this->strId = $id ?: 0;
 		$this->strField = $strField;
-		$this->strValueField = $strValueField;
+		$this->strValueField = $strValueField ?: 'id';
+		$this->strKeyField = $strKeyField ?: 'id';
 		
 		$objDatabase = \Database::getInstance();
 		$this->loadDataContainer($this->strSource);
@@ -353,11 +355,11 @@ class TableTree extends \Widget
 		// Load the requested nodes
 		$tree = '';
 		$level = $level * 30;
-		$objRows = \Database::getInstance()->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? "ORDER BY ".$this->strOrderField : ""))->execute($id);
+		$objRows = \Database::getInstance()->prepare("SELECT id,".$strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? "ORDER BY ".$this->strOrderField : ""))->execute($id);
 
 		while ($objRows->next())
 		{
-			$tree .= $this->renderTree($objRows->id,$level);
+			$tree .= $this->renderTree($objRows->{$strKeyField},$level);
 		}
 		
 		return $tree;
@@ -384,11 +386,11 @@ class TableTree extends \Widget
 		$node = 'tree_' . $this->strSource . '_' . $this->strField;
 		$xtnode = 'tree_' . $this->strSource . '_' . $this->strName;
 		$nestedModes = array(5);
-		
-		$strKeyField = $this->strKeyField;
-		$strValueField = $this->strValueField;
+	
+		$strKeyField = $this->strKeyField ?: 'id';
+		$strValueField = $this->strValueField ?: 'id';
 		$strOrderField = $this->strOrderField;
-
+		
 		// Get the session data and toggle the nodes
 		if (\Input::get($flag.'tg'))
 		{
@@ -397,14 +399,14 @@ class TableTree extends \Widget
 			$this->redirect(preg_replace('/(&(amp;)?|\?)'.$flag.'tg=[^& ]*/i', '', \Environment::get('request')));
 		}
 
-		$objRow = $objDatabase->prepare("SELECT * FROM ".$this->strSource." WHERE id=?")->limit(1)->execute($id);
-
+		$objRow = $objDatabase->prepare("SELECT * FROM ".$this->strSource." WHERE ".$strKeyField."=?")->limit(1)->execute($id);
+		
 		// Return if there is no result
 		if ($objRow->numRows < 1)
 		{
 			return '';
 		}
-
+		
 		$return = '';
 		$intSpacing = 20;
 		$childs = array();
@@ -412,11 +414,11 @@ class TableTree extends \Widget
 		// Check whether there are child records
 		if (!$blnNoRecursion && in_array($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['mode'], $nestedModes) )
 		{
-			$objChilds = $objDatabase->prepare("SELECT id FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))
+			$objChilds = $objDatabase->prepare("SELECT id,".$strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))
 									   ->execute($id);
 			if ($objChilds->numRows > 0)
 			{
-				$childs = $objChilds->fetchEach('id');
+				$childs = $objChilds->fetchEach($strKeyField);
 			}
 		}
 
@@ -441,7 +443,7 @@ class TableTree extends \Widget
 		// Add the current row
 		if (count($childs) > 0)
 		{
-			$return .= '<a href="' . $this->addToUrl('node='.$objRow->id) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$objRow->$strValueField.'</a></div> <div class="tl_right">';
+			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$objRow->$strValueField.'</a></div> <div class="tl_right">';
 		}
 		else
 		{

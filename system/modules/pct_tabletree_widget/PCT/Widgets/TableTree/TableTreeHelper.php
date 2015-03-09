@@ -43,7 +43,7 @@ class TableTreeHelper extends \Backend
 				$arrData['tabletree']['keyField'] = \Input::post('keyField');
 				$arrData['tabletree']['orderField'] = \Input::post('orderField');
 				$objWidget = new \PCT\Widgets\TableTree($arrData, $objDC);
-				echo $objWidget->generateAjax($this->strAjaxId, \Input::post('field'), \Input::post('valueField'), intval(\Input::post('level')));
+				echo $objWidget->generateAjax($this->strAjaxId, \Input::post('field'), \Input::post('valueField'), \Input::post('keyField'), intval(\Input::post('level')));
 				exit;
 				break;
 			case 'reloadTabletree':
@@ -84,7 +84,6 @@ class TableTreeHelper extends \Backend
 				if ($intId > 0 && $objDatabase->tableExists($strSource))
 				{
 					$objRow = $objDatabase->prepare("SELECT * FROM " . $strSource . " WHERE id=?")->execute($intId);
-					
 					// The record does not exist
 					if ($objRow->numRows < 1)
 					{
@@ -93,7 +92,7 @@ class TableTreeHelper extends \Backend
 						die('Bad Request');
 					}
 
-					$varValue = $objRow->$strValueField;
+					$varValue = $objRow->{$strValueField};
 				}
 				
 				// Load the current active record
@@ -102,6 +101,9 @@ class TableTreeHelper extends \Backend
 					$objActiveRecord = $objDatabase->prepare("SELECT * FROM " . $objDC->table . " WHERE id=?")->execute($intDcaId);
 					$objDC->activeRecord = $objActiveRecord;
 				}
+				
+				// Set the new value
+				$varValue = trimsplit('\t',\Input::post('value',true));
 				
 				// Call the load_callback
 				if (is_array($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['load_callback']))
@@ -120,9 +122,6 @@ class TableTreeHelper extends \Backend
 					}
 				}
 
-				// Set the new value
-				$varValue = trimsplit('\t',\Input::post('value',true));
-				
 				// Build the attributes based on the "eval" array
 				$arrAttribs = $GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['eval'];
 

@@ -136,14 +136,14 @@ class WidgetTableTree extends \Widget
 			}
 			return '';
 		}
-		elseif (strpos($varInput, ',') === false)
-		{
-			return $this->blnIsMultiple ? array(intval($varInput)) : intval($varInput);
-		}
 		else
 		{
-			$arrValue = array_map('intval', array_filter(explode(',', $varInput)));
-			return $this->blnIsMultiple ? $arrValue : $arrValue[0];
+			$arrInput = explode(',', $varInput);
+			if(count($arrInput) > 1)
+			{
+				$this->blnIsMultiple = true;
+			}
+			return $varInput;
 		}
 	}
 
@@ -158,14 +158,15 @@ class WidgetTableTree extends \Widget
 		$arrValues = array();
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
-		if (!empty($this->varValue)) // Can be an array
+		
+		if(!empty($this->varValue)) // Can be an array
 		{
 			if(!is_array($this->varValue))
 			{
 				$this->varValue = array($this->varValue);
 			}
 			
-			$objRows = \Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE id IN(".implode(',',$this->varValue).")");
+			$objRows = \Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE ".\Database::getInstance()->findInSet($strKeyField,$this->varValue));
 			
 			if ($objRows->numRows > 0)
 			{
@@ -217,7 +218,7 @@ class WidgetTableTree extends \Widget
 				}
 			}
 		}
-
+	
 		$return = '<input type="hidden" name="'.$this->strName.'" id="ctrl_'.$this->strId.'" value="'.implode(',', $arrSet).'">' . ($this->blnIsSortable ? '
   <input type="hidden" name="'.$this->strOrderName.'" id="ctrl_'.$this->strOrderId.'" value="'.$this->{$this->strOrderField}.'">' : '') . '
   <div class="selector_container">' . (($this->blnIsSortable && count($arrValues) > 1) ? '

@@ -1,3 +1,6 @@
+### 1.1.0
+Fixed: Building the widget with key fields besides the id field
+
 ### Version 1.0.0
 Added: Root nodes feature
 Added: English languages files

@@ -85,7 +85,7 @@ class TableTree extends \Widget
 		
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
-		
+		\FB::log($arrAttributes);
 		// get field defintion from datacontainer since contao does not pass custom evalulation arrays to widgets
 		if(!is_array($arrAttributes['tabletree']))
 		{
@@ -94,7 +94,7 @@ class TableTree extends \Widget
 		}
 		
 		$this->strSource = $arrAttributes['tabletree']['source'];
-		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'title';
+		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'id';
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
 		$this->strOrderField = strlen($arrAttributes['tabletree']['orderField']) > 0 ? $arrAttributes['tabletree']['orderField'] : 'sorting';
 		

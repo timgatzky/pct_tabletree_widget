@@ -71,7 +71,9 @@ class PageTableTree extends \Backend
 		$strTable = \Input::get('table');
 		$strField = \Input::get('field');
 		$strSource = \Input::get('source');
-		$strValueField = \Input::get('valueField') ? \Input::get('valueField') : 'title';
+		$strValueField = \Input::get('valueField') ?: 'id';
+		$strKeyField = \Input::get('keyField') ?: 'id';
+		$strOrderField = \Input::get('orderField') ?: 'id';
 		
 		// Define the current ID
 		define('CURRENT_ID', (\Input::get('table') ? \Session::getInstance()->get('CURRENT_ID') : \Input::get('id')));
@@ -83,6 +85,7 @@ class PageTableTree extends \Backend
 		$objDC = new $strDriver($strSource);
 		$objDC->valueField = $strValueField;
 		$objDC->keyField = $strKeyField;
+		$objDC->orderField = $strOrderField;
 		$objDC->field = $strField;
 		$objDC->table = $strTable;
 		

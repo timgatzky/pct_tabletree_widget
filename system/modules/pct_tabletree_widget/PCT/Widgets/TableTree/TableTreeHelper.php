@@ -62,6 +62,8 @@ class TableTreeHelper extends \Backend
 					$intId = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', $strField);
 					$strField = preg_replace('/(.*)_[0-9a-zA-Z]+$/', '$1', $strField);
 				}
+				
+				$this->loadDataContainer($objDC->table);
 
 				// The field does not exist
 				if (!isset($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]))
@@ -79,26 +81,17 @@ class TableTreeHelper extends \Backend
 				{
 					$multiple = true;
 				}
-
-				// Load the value
-				if ($intId > 0 && $objDatabase->tableExists($strSource))
+	
+				// Load the current active record
+				if($intDcaId > 0 && $objDatabase->tableExists($objDC->table))
 				{
-					$objRow = $objDatabase->prepare("SELECT * FROM " . $strSource . " WHERE id=?")->execute($intId);
-					// The record does not exist
-					if ($objRow->numRows < 1)
+					$objActiveRecord = $objDatabase->prepare("SELECT * FROM " . $objDC->table . " WHERE id=?")->execute($intDcaId);
+					if($objActiveRecord->numRows <  1)
 					{
 						$this->log('A record with the ID "' . $intId . '" does not exist in table "' . $strSource . '"', __METHOD__, TL_ERROR);
 						header('HTTP/1.1 400 Bad Request');
 						die('Bad Request');
 					}
-
-					$varValue = $objRow->{$strValueField};
-				}
-				
-				// Load the current active record
-				if($intDcaId > 0 && $objDatabase->tableExists($objDC->table))
-				{
-					$objActiveRecord = $objDatabase->prepare("SELECT * FROM " . $objDC->table . " WHERE id=?")->execute($intDcaId);
 					$objDC->activeRecord = $objActiveRecord;
 				}
 				

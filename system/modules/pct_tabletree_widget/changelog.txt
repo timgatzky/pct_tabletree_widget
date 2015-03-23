@@ -1,3 +1,6 @@
+### 1.2.0
+Fixed: Bad request when loading the new values in edit all mode
+
 ### 1.1.0
 Fixed: Building the widget with key fields besides the id field
 Fixed: Handle non integer values in validator correctly

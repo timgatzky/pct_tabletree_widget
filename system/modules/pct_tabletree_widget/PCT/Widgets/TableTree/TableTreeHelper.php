@@ -98,6 +98,11 @@ class TableTreeHelper extends \Backend
 				// Set the new value
 				$varValue = trimsplit('\t',\Input::post('value',true));
 				
+				if(!is_array($varValue))
+				{
+					$varValue = explode(',', $varValue);
+				}
+				
 				// Call the load_callback
 				if (is_array($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['load_callback']))
 				{

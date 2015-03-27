@@ -143,7 +143,7 @@ class WidgetTableTree extends \Widget
 			{
 				$this->blnIsMultiple = true;
 			}
-			return $varInput;
+			return $arrInput;
 		}
 	}
 

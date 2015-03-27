@@ -1,3 +1,6 @@
+### 1.2.1
+Fixed: Store values as arrays at anytime
+
 ### 1.2.0
 Fixed: Bad request when loading the new values in edit all mode
 

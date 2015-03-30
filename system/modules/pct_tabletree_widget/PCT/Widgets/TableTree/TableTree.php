@@ -166,7 +166,7 @@ class TableTree extends \Widget
 		$this->getNodes();
 		$for = $objSession->get('pct_tabletree_selector_search');
 		$arrIds = array();
-\FB::log($for);
+
 		// Search for a specific value
 		if ($for != '')
 		{
@@ -262,9 +262,7 @@ class TableTree extends \Widget
 			// custom root nodes
 			elseif(count($this->arrRootNodes) > 0)
 			{
-				\FB::log($this->arrRootNodes);
 				$nodes = $this->eliminateNestedPages($this->arrRootNodes, $this->strSource);
-				\FB::log($nodes);
 				foreach ($nodes as $node)
 				{
 					$tree .= $this->renderTree($node, -20);

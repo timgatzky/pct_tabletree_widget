@@ -97,17 +97,18 @@ class TableTree extends \Widget
 		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'id';
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
 		$this->strOrderField = strlen($arrAttributes['tabletree']['orderField']) > 0 ? $arrAttributes['tabletree']['orderField'] : 'sorting';
+		$this->strRootField = strlen($arrAttributes['tabletree']['rootsField']) > 0 ? $arrAttributes['tabletree']['rootsField'] : 'rootNodes';
 		
 		// set roots
 		if(isset($arrAttributes['tabletree']['roots']))
 		{
-			if(is_array($arrAttributes['tabletree']['roots']))
+			if(!is_array($arrAttributes['tabletree']['roots']))
 			{
-				$this->arrRootNodes = $arrAttributes['tabletree']['roots'];
+				$this->arrRootNodes = explode(',', $arrAttributes['tabletree']['roots']);
 			}
 			else
 			{
-				$this->arrRootNodes = explode(',', $arrAttributes['tabletree']['roots']);
+				$this->arrRootNodes = $arrAttributes['tabletree']['roots'];
 			}
 		}
 	}
@@ -165,7 +166,7 @@ class TableTree extends \Widget
 		$this->getNodes();
 		$for = $objSession->get('pct_tabletree_selector_search');
 		$arrIds = array();
-
+\FB::log($for);
 		// Search for a specific value
 		if ($for != '')
 		{
@@ -175,20 +176,20 @@ class TableTree extends \Widget
 				$for = substr($for, 1);
 			}
 
-			$objRoot = $this->Database->prepare("SELECT id,".$strValueField.$strKeyField != 'id' ? ",".$strKeyField : ""." FROM ".$this->strSource." WHERE CAST(title AS CHAR) REGEXP ?")
+			$objRoot = $objDatabase->prepare("SELECT id,".$strValueField.$strKeyField != 'id' ? ",".$strKeyField : ""." FROM ".$this->strSource." WHERE CAST(title AS CHAR) REGEXP ?")
 									  ->execute($for);
-
+			
 			if ($objRoot->numRows > 0)
 			{
 				// Respect existing limitations
-				if (is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['rootNodes']))
+				if (is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField]))
 				{
 					$arrRoot = array();
 
 					while ($objRoot->next())
 					{
 						// Predefined node set (see #3563)
-						if (count(array_intersect($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['rootNodes'], $this->Database->getParentRecords($objRoot->id, $this->strSource))) > 0)
+						if (count(array_intersect($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField], $objDatabase->getParentRecords($objRoot->id, $this->strSource))) > 0)
 						{
 							$arrRoot[] = $objRoot->id;
 						}
@@ -209,7 +210,7 @@ class TableTree extends \Widget
 					{
 						// Show only mounted pages to regular users
 						## tl_page only
-						if (count(array_intersect($this->User->pagemounts, $this->Database->getParentRecords($objRoot->{$strKeyField}, $this->strSource))) > 0)
+						if (count(array_intersect($this->User->pagemounts, $objDatabase->getParentRecords($objRoot->{$strKeyField}, $this->strSource))) > 0)
 						{
 							$arrRoot[] = $objRoot->{$strKeyField};
 						}
@@ -230,9 +231,9 @@ class TableTree extends \Widget
 			$strNode = $objSession->get('tabletree_node');
 			
 			// Unset the node if it is not within the predefined node set (see #5899)
-			if ($strNode > 0 && is_array($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes']))
+			if ($strNode > 0 && is_array($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField]))
 			{
-				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes'], $this->strSource)))
+				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField], $this->strSource)))
 				{
 					$this->Session->remove('tabletree_node');
 				}
@@ -250,9 +251,9 @@ class TableTree extends \Widget
 			}
 			
 			// Predefined node set (see #3563)
-			elseif (is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['rootNodes']))
+			elseif (is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField]))
 			{
-			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField]['rootNodes'], $this->strSource);
+			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField], $this->strSource);
 			   foreach ($nodes as $node)
 			   {
 			   		$tree .= $this->renderTree($node, -20);
@@ -261,7 +262,9 @@ class TableTree extends \Widget
 			// custom root nodes
 			elseif(count($this->arrRootNodes) > 0)
 			{
+				\FB::log($this->arrRootNodes);
 				$nodes = $this->eliminateNestedPages($this->arrRootNodes, $this->strSource);
+				\FB::log($nodes);
 				foreach ($nodes as $node)
 				{
 					$tree .= $this->renderTree($node, -20);

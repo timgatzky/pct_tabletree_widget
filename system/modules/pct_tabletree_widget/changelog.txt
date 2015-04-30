@@ -1,3 +1,6 @@
+### 1.2.2
+Fixed: Searching causes sql error
+
 ### 1.2.1
 Fixed: Store values as arrays at anytime
 Fixed: An issue with root nodes

@@ -176,9 +176,7 @@ class TableTree extends \Widget
 				$for = substr($for, 1);
 			}
 
-			$objRoot = $objDatabase->prepare("SELECT id,".$strValueField." FROM ".$this->strSource." WHERE CAST(title AS CHAR) REGEXP ?")
-									  ->execute($for);
-			
+			$objRoot = $objDatabase->prepare("SELECT id,".$strValueField." FROM ".$this->strSource." WHERE CAST(".$strValueField." AS CHAR) REGEXP ?")->execute($for);
 			if ($objRoot->numRows > 0)
 			{
 				// Respect existing limitations

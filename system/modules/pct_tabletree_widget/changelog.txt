@@ -1,5 +1,7 @@
 ### 1.2.2
 Fixed: Searching causes sql error
+Fixed: Pass the current ID to the popup url
+Update: General bug fixes and improvements
 
 ### 1.2.1
 Fixed: Store values as arrays at anytime

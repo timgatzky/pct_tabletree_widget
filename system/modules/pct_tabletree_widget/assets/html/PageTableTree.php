@@ -75,6 +75,7 @@ class PageTableTree extends \Backend
 		$strKeyField = \Input::get('keyField') ?: 'id';
 		$strOrderField = \Input::get('orderField') ?: 'id';
 		$strRootsField = \Input::get('rootsField') ?: 'rootNodes';
+		$strTranslationField = \Input::get('translationField');
 		
 		// Define the current ID
 		define('CURRENT_ID', (\Input::get('table') ? \Session::getInstance()->get('CURRENT_ID') : \Input::get('id')));
@@ -87,6 +88,7 @@ class PageTableTree extends \Backend
 		$objDC->valueField = $strValueField;
 		$objDC->keyField = $strKeyField;
 		$objDC->orderField = $strOrderField;
+		$objDC->translationField = $strTranslationField;
 		$objDC->field = $strField;
 		$objDC->table = $strTable;
 		
@@ -111,6 +113,8 @@ class PageTableTree extends \Backend
 		$arrAttribs['tabletree']['keyField'] = $strKeyField;
 		$arrAttribs['tabletree']['orderField'] = $strOrderField;
 		$arrAttribs['tabletree']['rootsField'] = $strRootsField;
+		$arrAttribs['tabletree']['translationField'] = $strTranslationField;
+		
 		// get root nodes from session
 		$roots = \Session::getInstance()->get('pct_tabletree_roots');
 		$arrAttribs['tabletree']['roots'] = $roots[$strField];

@@ -75,7 +75,7 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField,
 			// HOOK
 			window.fireEvent('ajax_change');
 		}
-	}).post({'action':'loadTabletree', 'loadCustomElementFields':1, 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'valueField':valueField, 'keyField':keyField, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
+	}).post({'action':'loadTabletree', 'loadCustomElementFields':1, 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'valueField':valueField, 'keyField':keyField,'state':1, 'REQUEST_TOKEN':Contao.request_token});
 	return false;
 }
 
@@ -145,7 +145,7 @@ Backend.openModalTabletreeSelector = function(options)
 					AjaxRequest.hideBox();
 					window.fireEvent('ajax_change');
 				}
-			}).post({'action':act, 'loadCustomElementFields':1, 'name':opt.id,'source':options.source, 'valueField':options.valueField, 'keyField':options.keyField, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
+			}).post({'action':act, 'loadCustomElementFields':1, 'name':opt.id,'source':options.source, 'valueField':options.valueField, 'keyField':options.keyField,'translationField':options.translationField, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
 		}
 		this.hide();
 	});

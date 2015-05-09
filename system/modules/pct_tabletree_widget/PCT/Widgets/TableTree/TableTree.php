@@ -99,6 +99,11 @@ class TableTree extends \Widget
 		$this->strOrderField = strlen($arrAttributes['tabletree']['orderField']) > 0 ? $arrAttributes['tabletree']['orderField'] : 'sorting';
 		$this->strRootField = strlen($arrAttributes['tabletree']['rootsField']) > 0 ? $arrAttributes['tabletree']['rootsField'] : 'rootNodes';
 		
+		if(strlen($arrAttributes['tabletree']['translationField']) > 0)
+		{
+			$this->strTranslationField = $arrAttributes['tabletree']['translationField'];
+		}
+		
 		// set roots
 		if(isset($arrAttributes['tabletree']['roots']))
 		{
@@ -151,7 +156,8 @@ class TableTree extends \Widget
 		$objDatabase = \Database::getInstance();
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
-
+		$strTranslationField = $this->strTranslationField;
+			
 		$this->import('BackendUser', 'User');
 		$this->loadDataContainer($this->strSource);
 
@@ -389,7 +395,8 @@ class TableTree extends \Widget
 		$strKeyField = $this->strKeyField ?: 'id';
 		$strValueField = $this->strValueField ?: 'id';
 		$strOrderField = $this->strOrderField;
-		
+		$strTanslationField = $this->strTranslationField;
+			
 		// Get the session data and toggle the nodes
 		if (\Input::get($flag.'tg'))
 		{
@@ -442,12 +449,26 @@ class TableTree extends \Widget
 		// Add the current row
 		if (count($childs) > 0)
 		{
-			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$objRow->$strValueField.'</a></div> <div class="tl_right">';
+			$strLabel = $objRow->$strValueField;
+			if(strlen($objRow->{$strTanslationField}) > 0)
+			{
+				$arrTranslations = deserialize($objRow->{$strTanslationField});
+				$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
+				$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
+			}
+			
+			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
 		}
 		else
 		{
-			$return .= $objRow->$strValueField.'</div> <div class="tl_right">';
-			#\FB::log($objRow->$strValueField);
+			$strLabel = $objRow->$strValueField;
+			if(strlen($objRow->{$strTanslationField}) > 0)
+			{
+				$arrTranslations = deserialize($objRow->{$strTanslationField});
+				$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
+				$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
+			}
+			$return .= $strLabel.'</div> <div class="tl_right">';
 		}
 
 		// set fieldtype to checkbox if field is multiple

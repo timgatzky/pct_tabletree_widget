@@ -100,6 +100,11 @@ class WidgetTableTree extends \Widget
 		$this->strOrderField = $arrAttributes['tabletree']['orderField'];
 		$this->strRootField = strlen($arrAttributes['tabletree']['rootsField']) > 0 ? $arrAttributes['tabletree']['rootsField'] : 'rootNodes';
 		
+		if(strlen($arrAttributes['tabletree']['translationField']) > 0)
+		{
+			$this->strTranslationField = $arrAttributes['tabletree']['translationField'];
+		}
+		
 		// flag as sortable
 		if($arrAttributes['sortable'] || $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['orderField'])
 		{
@@ -163,6 +168,7 @@ class WidgetTableTree extends \Widget
 		$arrValues = array();
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
+		$strTanslationField = $this->strTranslationField;
 		
 		if(!empty($this->varValue)) // Can be an array
 		{
@@ -178,7 +184,17 @@ class WidgetTableTree extends \Widget
 				while ($objRows->next())
 				{
 					$arrSet[] = $objRows->{$strKeyField};
-					$arrValues[$objRows->{$strKeyField}] = $objRows->$strValueField . ' (' . $objRows->{$strKeyField} . ')';
+					
+					// translate
+					$strLabel = $objRows->$strValueField;
+					if(strlen($objRows->{$strTanslationField}) > 0)
+					{
+						$arrTranslations = deserialize($objRows->{$strTanslationField});
+						$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
+						$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
+					}
+							
+					$arrValues[$objRows->{$strKeyField}] = $strLabel . ' (' . $objRows->{$strKeyField} . ')';
 				}
 			}
 			
@@ -238,7 +254,7 @@ class WidgetTableTree extends \Widget
 		}
 		
 		$return .= '</ul>
-    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrSet).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\'});return false">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
+    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;translationField='.$this->strTranslationField.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrSet).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\'});return false">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
     ($blnHasOrder ? '<script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderId.'")</script>' : '') . '
   
   </div>';

@@ -42,6 +42,7 @@ class TableTreeHelper extends \Backend
 				$arrData['tabletree']['valueField'] = \Input::post('valueField');
 				$arrData['tabletree']['keyField'] = \Input::post('keyField');
 				$arrData['tabletree']['orderField'] = \Input::post('orderField');
+				$arrData['tabletree']['translationField'] = \Input::post('translationField');
 				$objWidget = new \PCT\Widgets\TableTree($arrData, $objDC);
 				echo $objWidget->generateAjax($this->strAjaxId, \Input::post('field'), \Input::post('valueField'), \Input::post('keyField'), intval(\Input::post('level')));
 				exit;
@@ -54,6 +55,8 @@ class TableTreeHelper extends \Backend
 				$strValueField = $objDC->valueField = \Input::post('valueField');
 				$strKeyField = $objDC->keyField = \Input::post('keyField');
 				$strOrderField = $objDC->orderField = \Input::post('orderField');
+				$strTranslationField = $objDC->translationField = \Input::post('translationField');
+				
 				$objDatabase = \Database::getInstance();
 				
 				// Handle the keys in "edit multiple" mode
@@ -133,6 +136,7 @@ class TableTreeHelper extends \Backend
 				$arrAttribs['tabletree']['valueField'] = $strValueField;
 				$arrAttribs['tabletree']['keyField'] = $strKeyField;
 				$arrAttribs['tabletree']['orderField'] = $strOrderField;
+				$arrAttribs['tabletree']['translationField'] = $strTranslationField;
 				
 				$objWidget = new $GLOBALS['BE_FFL']['pct_tabletree']($arrAttribs);
 				echo $objWidget->generate();

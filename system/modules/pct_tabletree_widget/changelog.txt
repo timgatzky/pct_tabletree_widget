@@ -1,3 +1,6 @@
+### 1.2.3
+Update: Handle dynamic translations through translations widgets
+
 ### 1.2.2
 Fixed: Searching causes sql error
 Fixed: Pass the current ID to the popup url

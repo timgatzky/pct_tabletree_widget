@@ -1,3 +1,6 @@
+### 1.2.4
+Update: Rebuild with Contao namespace classes and autoload.php reference (#1)
+
 ### 1.2.3
 Update: Handle dynamic translations through translations widgets
 

@@ -30,8 +30,8 @@ ClassLoader::addClasses(array
 (
 	'PCT\Widgets\TableTree'										=> $path.'/PCT/Widgets/TableTree/TableTree.php',	
 	'PCT\Widgets\WidgetTableTree'								=> $path.'/PCT/Widgets/TableTree/WidgetTableTree.php',	
-	'PCT\Widgets\TableTree\PageTableTree'						=> $path.'/PCT/Widgets/TableTree/assets/html/PageTableTree.php',	
-	'PCT\Widgets\TableTree\TableTreeHelper'						=> $path.'/PCT/Widgets/TableTree/TableTreeHelper.php',	
+	'PCT\Widgets\TableTree\TableTreeHelper'						=> $path.'/PCT/Widgets/TableTree/TableTreeHelper.php',
+	'Contao\BackendPctTableTree'								=> $path.'/Contao/BackendPctTableTree.php',
 ));
 
 

@@ -1,4 +1,5 @@
 ### 1.2.4
+Fixed: Support sorting fields correctly in backend popup
 Update: Rebuild with Contao namespace classes and autoload.php reference (#1)
 
 ### 1.2.3

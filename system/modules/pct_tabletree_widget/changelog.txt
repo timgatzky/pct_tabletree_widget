@@ -1,4 +1,6 @@
 ### 1.2.5
+Fixed: Show all nodes when no root nodes are selected even for non-admin users (#3)
+
 ### 1.2.4
 Fixed: Support sorting fields correctly in backend popup
 Update: Rebuild with Contao namespace classes and autoload.php reference (#1)

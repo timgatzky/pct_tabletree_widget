@@ -212,12 +212,7 @@ class TableTree extends \Widget
 
 					while ($objRoot->next())
 					{
-						// Show only mounted pages to regular users
-						## tl_page only
-						if (count(array_intersect($this->User->pagemounts, $objDatabase->getParentRecords($objRoot->{$strKeyField}, $this->strSource))) > 0)
-						{
-							$arrRoot[] = $objRoot->{$strKeyField};
-						}
+						$arrRoot[] = $objRoot->{$strKeyField};
 					}
 
 					$arrIds = $arrRoot;
@@ -242,11 +237,10 @@ class TableTree extends \Widget
 					$this->Session->remove('tabletree_node');
 				}
 			}
-
+			
 			// Root nodes (breadcrumb menu)
 			if (!empty($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root']))
 			{
-			   
 			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root'], $this->strSource);
 			   foreach ($nodes as $node)
 			   {
@@ -273,7 +267,7 @@ class TableTree extends \Widget
 				}
 			}
 			// Show all pages to admins
-			elseif ($this->User->isAdmin)
+			elseif ($this->User->isAdmin || empty($this->arrRootNodes))
 			{
 				// check if table contains a pid field
 				$hasPid = false;
@@ -291,8 +285,6 @@ class TableTree extends \Widget
 			{
 				// do nothing
 			}
-			
-			
 		}
 		
 		// Select all checkboxes

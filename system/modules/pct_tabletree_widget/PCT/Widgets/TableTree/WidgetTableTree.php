@@ -78,6 +78,7 @@ class WidgetTableTree extends \Widget
 	{
 		$this->import('Database');
 		parent::__construct($arrAttributes);
+		$objSession = \Session::getInstance();
 		
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
@@ -110,8 +111,9 @@ class WidgetTableTree extends \Widget
 		{
 			$this->blnIsSortable = true;
 		}
-			
+		
 		// store root nodes in session
+		$roots = array();
 		if(isset($arrAttributes['tabletree']['roots']))
 		{
 			if(is_array($arrAttributes['tabletree']['roots']))
@@ -122,12 +124,10 @@ class WidgetTableTree extends \Widget
 			{
 				$roots = explode(',', $arrAttributes['tabletree']['roots']);
 			}
-		
-			$objSession = \Session::getInstance();
-			$arrSession = $objSession->get('pct_tabletree_roots');
-			$arrSession[$this->name] = $roots;
-	 		$objSession->set('pct_tabletree_roots',$arrSession);
- 		}
+		}
+ 		$arrSession = $objSession->get('pct_tabletree_roots');
+		$arrSession[$this->name] = $roots;
+		$objSession->set('pct_tabletree_roots',$arrSession);
 	}
 
 

@@ -1,3 +1,6 @@
+### 1.2.7
+Added: Support custom order fields (#5)
+
 ### 1.2.6
 Fixed: Store values for none multiple fields not as serialized array (#4)
 

@@ -107,9 +107,12 @@ class WidgetTableTree extends \Widget
 		}
 		
 		// flag as sortable
-		if($arrAttributes['sortable'] || $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['orderField'])
+		if($arrAttributes['sortable'] || $arrAttributes['eval']['isSortable'])
 		{
 			$this->blnIsSortable = true;
+			$this->strOrderName = 'orderSRC_'.$this->strName;
+			$this->strOrderId = 'orderSRC_'.$this->strName;
+			$this->strOrderField = 'orderSRC_'.$this->strName;
 		}
 		
 		// store root nodes in session
@@ -138,6 +141,19 @@ class WidgetTableTree extends \Widget
 	 */
 	protected function validator($varInput)
 	{
+		// Store the order value
+		if ($this->blnIsSortable)
+		{
+			$arrNew = \Input::post($this->strOrderName);
+
+			// Only proceed if the value has changed
+			if ($arrNew !== deserialize($this->activeRecord->{$this->strOrderName}))
+			{
+				\Database::getInstance()->prepare("UPDATE ".$this->strTable." %s WHERE id=?")->set( array('tstamp'=>time(),$this->strOrderName=>$arrNew) )->execute($this->activeRecord->id);
+				$this->objDca->createNewVersion = true; // see #6285
+			}
+		}
+		
 		if (empty($varInput))
 		{
 			if ($this->mandatory)
@@ -152,6 +168,8 @@ class WidgetTableTree extends \Widget
 			{
 				return explode(',', $varInput);
 			}
+			
+			
 			return $varInput;
 		}
 	}
@@ -163,7 +181,7 @@ class WidgetTableTree extends \Widget
 	 */
 	public function generate()
 	{
-		$arrSet = array();
+		$arrRawValues = array();
 		$arrValues = array();
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
@@ -182,7 +200,7 @@ class WidgetTableTree extends \Widget
 			{
 				while ($objRows->next())
 				{
-					$arrSet[] = $objRows->{$strKeyField};
+					$arrRawValues[] = $objRows->{$strKeyField};
 					
 					// translate
 					$strLabel = $objRows->$strValueField;
@@ -201,11 +219,17 @@ class WidgetTableTree extends \Widget
 			if($this->blnIsSortable)
 			{	
 				// Apply a custom sort by real dca order field like orderSRC
-				if($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['orderField'])
+				$strOrderField = 'orderSRC_'.$this->strName;
+					
+				if(strlen($strOrderField) > 0)
 				{
-					$strOrderField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['orderField'];
 					$arrNew = array();
-					foreach ($this->$strOrderField as $i)
+					$varValues = deserialize($this->activeRecord->{$strOrderField});
+					if(!is_array($varValues))
+					{
+						$varValues = explode(',', $varValues);
+					}
+					foreach ($varValues as $i)
 					{
 						if (isset($arrValues[$i]))
 						{
@@ -233,7 +257,7 @@ class WidgetTableTree extends \Widget
 					{
 						$tmp[$id] = $arrValues[$id];
 					}
-					$arrValues = $tmp;
+					$arrSet = $tmp;
 					unset($tmp);
 				}
 			}
@@ -241,7 +265,7 @@ class WidgetTableTree extends \Widget
 		
 		$intId = $this->activeRecord->id ?: \Input::get('id');
 	
-		$return = '<input type="hidden" name="'.$this->strName.'" id="ctrl_'.$this->strId.'" value="'.implode(',', $arrSet).'">' . ($this->blnIsSortable ? '
+		$return = '<input type="hidden" name="'.$this->strName.'" id="ctrl_'.$this->strId.'" value="'.implode(',', $arrRawValues).'">' . ($this->blnIsSortable ? '
   <input type="hidden" name="'.$this->strOrderName.'" id="ctrl_'.$this->strOrderId.'" value="'.$this->{$this->strOrderField}.'">' : '') . '
   <div class="selector_container">' . (($this->blnIsSortable && count($arrValues) > 1) ? '
     <p class="sort_hint">' . $GLOBALS['TL_LANG']['MSC']['dragItemsHint'] . '</p>' : '') . '
@@ -253,8 +277,8 @@ class WidgetTableTree extends \Widget
 		}
 		
 		$return .= '</ul>
-    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;translationField='.$this->strTranslationField.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrSet).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\'});return false">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
-    ($blnHasOrder ? '<script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderId.'")</script>' : '') . '
+    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;translationField='.$this->strTranslationField.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrRawValues).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\'});return false">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
+    ($this->blnIsSortable ? '<script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderId.'")</script>' : '') . '
   
   </div>';
 

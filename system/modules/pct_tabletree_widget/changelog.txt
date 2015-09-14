@@ -1,3 +1,6 @@
+### 1.2.6
+Fixed: Store values for none multiple fields not as serialized array (#4)
+
 ### 1.2.5
 Fixed: Show all nodes when no root nodes are selected even for non-admin users (#3)
 

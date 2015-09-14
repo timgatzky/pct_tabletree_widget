@@ -148,12 +148,11 @@ class WidgetTableTree extends \Widget
 		}
 		else
 		{
-			$arrInput = explode(',', $varInput);
-			if(count($arrInput) > 1)
+			if($this->blnIsMultiple)
 			{
-				$this->blnIsMultiple = true;
+				return explode(',', $varInput);
 			}
-			return $arrInput;
+			return $varInput;
 		}
 	}
 

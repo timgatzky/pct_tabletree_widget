@@ -1,3 +1,6 @@
+### 1.2.8
+Fixed: Load the current dataContainer array only when not loaded before
+
 ### 1.2.7
 Added: Support custom order fields (#5)
 

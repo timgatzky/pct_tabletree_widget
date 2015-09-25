@@ -81,7 +81,6 @@ class BackendPctTableTree extends Backend
 		define('CURRENT_ID', (\Input::get('table') ? \Session::getInstance()->get('CURRENT_ID') : \Input::get('id')));
 		
 		$this->loadDataContainer($strSource);
-		$this->loadDataContainer($strTable);
 		
 		$strDriver = 'DC_' . ($GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] ? $GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] : 'Table');
 		$objDC = new $strDriver($strSource);
@@ -99,6 +98,11 @@ class BackendPctTableTree extends Backend
 		}
 		
 		\Session::getInstance()->set('pctTableTreeRef', \Environment::get('request'));
+		
+		if(!is_array($GLOBALS['TL_DCA'][$strTable]))
+		{
+			$this->loadDataContainer($strTable);
+		}
 		
 		// Build the attributes based on the "eval" array
 		$arrAttribs = $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval'];

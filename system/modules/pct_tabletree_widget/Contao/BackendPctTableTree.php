@@ -70,6 +70,8 @@ class BackendPctTableTree extends Backend
 		$strValueField = \Input::get('valueField') ?: 'id';
 		$strKeyField = \Input::get('keyField') ?: 'id';
 		$strOrderField = \Input::get('orderField') ?: 'id';
+		$strConditionsField = \Input::get('conditionsField') ?: '';
+		
 		if($objDatabase->fieldExists('sorting',$strTable))
 		{
 			$strOrderField = 'sorting';
@@ -88,6 +90,8 @@ class BackendPctTableTree extends Backend
 		$objDC->keyField = $strKeyField;
 		$objDC->orderField = $strOrderField;
 		$objDC->translationField = $strTranslationField;
+		$objDC->conditionsField = $strConditionsField;
+		$objDC->conditions = $strConditions;
 		$objDC->field = $strField;
 		$objDC->table = $strTable;
 		
@@ -118,10 +122,17 @@ class BackendPctTableTree extends Backend
 		$arrAttribs['tabletree']['orderField'] = $strOrderField;
 		$arrAttribs['tabletree']['rootsField'] = $strRootsField;
 		$arrAttribs['tabletree']['translationField'] = $strTranslationField;
+		$arrAttribs['tabletree']['conditionsField'] = $strConditionsField;
 		
 		// get root nodes from session
 		$roots = \Session::getInstance()->get('pct_tabletree_roots');
 		$arrAttribs['tabletree']['roots'] = $roots[$strField];
+		
+		// get the conditions from the session
+		$conditions = \Session::getInstance()->get('pct_tabletree_conditions');
+		$arrAttribs['tabletree']['conditions'] = $conditions[$strField];
+		
+		
 		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDC);
 		
 		$this->Template->main = $objWidget->generate();

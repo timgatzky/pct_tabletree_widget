@@ -68,6 +68,18 @@ class TableTree extends \Widget
 	 */
 	protected $strKeyField = '';
 	
+	/**
+	 * Custom conditions
+	 * @var string
+	 */
+	protected $strConditions = '';
+	
+	/**
+	 * Field name of the conditions field
+	 * @var string
+	 */
+	protected $strConditionField = '';
+	
 
 	/**
 	 * Load the database object
@@ -98,6 +110,8 @@ class TableTree extends \Widget
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
 		$this->strOrderField = strlen($arrAttributes['tabletree']['orderField']) > 0 ? $arrAttributes['tabletree']['orderField'] : 'sorting';
 		$this->strRootField = strlen($arrAttributes['tabletree']['rootsField']) > 0 ? $arrAttributes['tabletree']['rootsField'] : 'rootNodes';
+		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?: '';
+		$this->strConditions = $this->replaceInsertTags($arrAttributes['tabletree']['conditions'] ?: '');
 		
 		if(strlen($arrAttributes['tabletree']['translationField']) > 0)
 		{
@@ -182,7 +196,7 @@ class TableTree extends \Widget
 				$for = substr($for, 1);
 			}
 
-			$objRoot = $objDatabase->prepare("SELECT id,".$strValueField." FROM ".$this->strSource." WHERE CAST(".$strValueField." AS CHAR) REGEXP ?")->execute($for);
+			$objRoot = $objDatabase->prepare("SELECT id,".$strValueField." FROM ".$this->strSource." WHERE CAST(".$strValueField." AS CHAR) REGEXP ? ".($this->strConditions ? " AND ".$this->strConditions:""))->execute($for);
 			if ($objRoot->numRows > 0)
 			{
 				// Respect existing limitations
@@ -266,7 +280,7 @@ class TableTree extends \Widget
 					$tree .= $this->renderTree($node, -20);
 				}
 			}
-			// Show all pages to admins
+			// Show all to admins
 			elseif ($this->User->isAdmin || empty($this->arrRootNodes))
 			{
 				// check if table contains a pid field
@@ -275,7 +289,7 @@ class TableTree extends \Widget
 				{
 					$hasPid = true;
 				}
-				$objRows = $objDatabase->prepare("SELECT id,".$strKeyField." FROM ".$this->strSource.($hasPid == true ? " WHERE pid=? " : "").($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
+				$objRows = $objDatabase->prepare("SELECT id,".$strKeyField." FROM ".$this->strSource.($hasPid == true ? " WHERE pid=? ".($this->strConditions ? " AND ".$this->strConditions:"") : "".($this->strConditions ? " AND ".$this->strConditions:"")).($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
 				while ($objRows->next())
 				{
 					$tree .= $this->renderTree($objRows->{$strKeyField}, -20);
@@ -397,7 +411,7 @@ class TableTree extends \Widget
 			$this->redirect(preg_replace('/(&(amp;)?|\?)'.$flag.'tg=[^& ]*/i', '', \Environment::get('request')));
 		}
 
-		$objRow = $objDatabase->prepare("SELECT * FROM ".$this->strSource." WHERE ".$strKeyField."=?")->limit(1)->execute($id);
+		$objRow = $objDatabase->prepare("SELECT * FROM ".$this->strSource." WHERE ".$strKeyField."=?".($this->strConditions ? " AND ".$this->strConditions:""))->limit(1)->execute($id);
 		
 		// Return if there is no result
 		if ($objRow->numRows < 1)

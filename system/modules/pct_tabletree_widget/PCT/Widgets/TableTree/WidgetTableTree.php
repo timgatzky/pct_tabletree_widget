@@ -68,6 +68,18 @@ class WidgetTableTree extends \Widget
 	 * @var string
 	 */
 	protected $strKeyField = '';
+	
+	/**
+	 * Custom conditions
+	 * @var string
+	 */
+	protected $strConditions = '';
+	
+	/**
+	 * Field name of the conditions field
+	 * @var string
+	 */
+	protected $strConditionField = '';
 
 
 	/**
@@ -100,6 +112,8 @@ class WidgetTableTree extends \Widget
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
 		$this->strOrderField = $arrAttributes['tabletree']['orderField'];
 		$this->strRootField = strlen($arrAttributes['tabletree']['rootsField']) > 0 ? $arrAttributes['tabletree']['rootsField'] : 'rootNodes';
+		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?: '';
+		$this->strConditions = $arrAttributes['tabletree']['conditions'] ?: '';
 		
 		if(strlen($arrAttributes['tabletree']['translationField']) > 0)
 		{
@@ -128,9 +142,15 @@ class WidgetTableTree extends \Widget
 				$roots = explode(',', $arrAttributes['tabletree']['roots']);
 			}
 		}
+ 		
  		$arrSession = $objSession->get('pct_tabletree_roots');
 		$arrSession[$this->name] = $roots;
 		$objSession->set('pct_tabletree_roots',$arrSession);
+		
+		// store the conditions in the session
+		$arrSession = $objSession->get('pct_tabletree_conditions');
+		$arrSession[$this->name] = $this->strConditions;
+		$objSession->set('pct_tabletree_conditions',$arrSession);
 	}
 
 
@@ -194,7 +214,7 @@ class WidgetTableTree extends \Widget
 				$this->varValue = array($this->varValue);
 			}
 			
-			$objRows = \Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE ".\Database::getInstance()->findInSet($strKeyField,$this->varValue));
+			$objRows = \Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE ".($this->strConditions ? $this->strConditions : " ")." ".\Database::getInstance()->findInSet($strKeyField,$this->varValue));
 			
 			if ($objRows->numRows > 0)
 			{
@@ -277,7 +297,7 @@ class WidgetTableTree extends \Widget
 		}
 		
 		$return .= '</ul>
-    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;translationField='.$this->strTranslationField.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrRawValues).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\'});return false">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
+    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;translationField='.$this->strTranslationField.'&amp;conditionsField='.$this->strConditionsField.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrRawValues).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\'});return false">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
     ($this->blnIsSortable ? '<script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderId.'")</script>' : '') . '
   
   </div>';

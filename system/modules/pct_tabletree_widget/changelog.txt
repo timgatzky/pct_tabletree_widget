@@ -1,3 +1,6 @@
+### 1.3.0
+Added: Support custom conditions (#6)
+
 ### 1.2.8
 Fixed: Load the current dataContainer array only when not loaded before
 

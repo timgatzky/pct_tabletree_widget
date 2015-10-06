@@ -366,11 +366,11 @@ class TableTree extends \Widget
 		// Load the requested nodes
 		$tree = '';
 		$level = $level * 30;
-		$objRows = \Database::getInstance()->prepare("SELECT id,".$strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? "ORDER BY ".$this->strOrderField : ""))->execute($id);
+		$objRows = \Database::getInstance()->prepare("SELECT id,".$this->strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))->execute($id);
 
 		while ($objRows->next())
 		{
-			$tree .= $this->renderTree($objRows->{$strKeyField},$level);
+			$tree .= $this->renderTree($objRows->{$this->strKeyField},$level);
 		}
 		
 		return $tree;

@@ -42,21 +42,22 @@
           <a href="<?php echo $this->managerHref; ?>" class="open" title="<?php echo specialchars($this->manager); ?>"><?php echo $this->manager; ?></a>
         </div>
       <?php endif; ?>
-       <?php if ($this->addSearch): ?>
-        <form action="<?php echo $this->action; ?>" method="post">
-          <div id="search">
-            <input type="hidden" name="FORM_SUBMIT" value="item_selector">
-            <input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
-            <input type="text" name="keyword" id="keyword" value="<?php echo $this->value; ?>" class="tl_text<?php if ($this->value != ''): ?> active<?php endif; ?>">
-            <input type="submit" name="search" value="<?php echo $this->search; ?>" class="tl_submit">
-          </div>
-          
-          <?php if($this->panels): ?>
-          <?php echo implode('', $this->panels); ?>
-          <?php endif; ?>
+      
+      <form action="<?php echo $this->action; ?>" method="post">
+		<?php if ($this->addSearch): ?>
+		  <div id="search">
+		    <input type="hidden" name="FORM_SUBMIT" value="item_selector">
+		    <input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
+		    <input type="text" name="keyword" id="keyword" value="<?php echo $this->value; ?>" class="tl_text<?php if ($this->value != ''): ?> active<?php endif; ?>">
+		    <input type="submit" name="search" value="<?php echo $this->search; ?>" class="tl_submit">
+		  </div>
+		<?php endif; ?>
+      
+      <?php if($this->panels): ?>
+      <?php echo implode('', $this->panels); ?>
+      <?php endif; ?>
           
         </form>
-      <?php endif; ?>
       <div class="tl_listing_container" id="tl_listing">
         <?php echo $this->breadcrumb; ?>
         <?php echo $this->main; ?>

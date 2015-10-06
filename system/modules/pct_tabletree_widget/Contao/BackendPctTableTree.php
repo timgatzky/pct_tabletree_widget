@@ -152,6 +152,24 @@ class BackendPctTableTree extends Backend
 		
 		$GLOBALS['TL_CONFIG']['debugMode'] = false;
 		
+		// add customs panels
+		$arrPanels = array();
+		if (isset($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel']) && count($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel']) > 0)
+		{
+			foreach($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel'] as $callback)
+			{
+				$this->DataContainer = $objDC;
+				
+				$this->import($callback[0]);
+				$this->Template->panels[] = $this->$callback[0]->$callback[1]($this);
+			}
+		}
+		
+		if(count($arrPanels) > 0)
+		{
+			$this->Template->panels = $arrPanels;
+		}
+		
 		$this->Template->output();
 	}
 }

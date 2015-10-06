@@ -50,6 +50,11 @@
             <input type="text" name="keyword" id="keyword" value="<?php echo $this->value; ?>" class="tl_text<?php if ($this->value != ''): ?> active<?php endif; ?>">
             <input type="submit" name="search" value="<?php echo $this->search; ?>" class="tl_submit">
           </div>
+          
+          <?php if($this->panels): ?>
+          <?php echo implode('', $this->panels); ?>
+          <?php endif; ?>
+          
         </form>
       <?php endif; ?>
       <div class="tl_listing_container" id="tl_listing">

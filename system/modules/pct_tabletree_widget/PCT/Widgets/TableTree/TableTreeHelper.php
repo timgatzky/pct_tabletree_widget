@@ -38,6 +38,7 @@ class TableTreeHelper extends \Backend
 				$arrData['strField'] = $objDC->field;
 				$arrData['id'] = $this->strAjaxName ?: $objDC->id;
 				$arrData['name'] = $objDC->field;
+				$arrData['field'] = $objDC->field;
 				$arrData['tabletree']['source'] = \Input::get('source');
 				$arrData['tabletree']['valueField'] = \Input::get('valueField');
 				$arrData['tabletree']['keyField'] = \Input::get('keyField');
@@ -66,8 +67,11 @@ class TableTreeHelper extends \Backend
 					$strField = preg_replace('/(.*)_[0-9a-zA-Z]+$/', '$1', $strField);
 				}
 				
-				$this->loadDataContainer($objDC->table);
-
+				if(!$GLOBALS['TL_DCA'][$objDC->table])
+				{
+					$this->loadDataContainer($objDC->table);
+				}
+				
 				// The field does not exist
 				if (!isset($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]))
 				{

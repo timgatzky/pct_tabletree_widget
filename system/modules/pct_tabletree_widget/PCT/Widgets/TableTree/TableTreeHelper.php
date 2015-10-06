@@ -38,13 +38,13 @@ class TableTreeHelper extends \Backend
 				$arrData['strField'] = $objDC->field;
 				$arrData['id'] = $this->strAjaxName ?: $objDC->id;
 				$arrData['name'] = $objDC->field;
-				$arrData['tabletree']['source'] = \Input::post('source');
-				$arrData['tabletree']['valueField'] = \Input::post('valueField');
-				$arrData['tabletree']['keyField'] = \Input::post('keyField');
-				$arrData['tabletree']['orderField'] = \Input::post('orderField');
-				$arrData['tabletree']['translationField'] = \Input::post('translationField');
+				$arrData['tabletree']['source'] = \Input::get('source');
+				$arrData['tabletree']['valueField'] = \Input::get('valueField');
+				$arrData['tabletree']['keyField'] = \Input::get('keyField');
+				$arrData['tabletree']['orderField'] = \Input::get('orderField');
+				$arrData['tabletree']['translationField'] = \Input::get('translationField');
 				$objWidget = new \PCT\Widgets\TableTree($arrData, $objDC);
-				echo $objWidget->generateAjax($this->strAjaxId, \Input::post('field'), \Input::post('valueField'), \Input::post('keyField'), intval(\Input::post('level')));
+				echo $objWidget->generateAjax($this->strAjaxId, $objDC->field, $arrData['tabletree']['valueField'], $arrData['tabletree']['keyField'], intval(\Input::post('level')));
 				exit;
 				break;
 			case 'reloadTabletree':

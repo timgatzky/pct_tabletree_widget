@@ -94,6 +94,7 @@ class BackendPctTableTree extends Backend
 		$objDC->conditions = $strConditions;
 		$objDC->field = $strField;
 		$objDC->table = $strTable;
+		$objDC->source = $strSource;
 		
 		// AJAX request
 		if ($_POST && \Environment::get('isAjaxRequest'))
@@ -132,9 +133,7 @@ class BackendPctTableTree extends Backend
 		$conditions = \Session::getInstance()->get('pct_tabletree_conditions');
 		$arrAttribs['tabletree']['conditions'] = $conditions[$strField];
 		
-		
 		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDC);
-		
 		$this->Template->main = $objWidget->generate();
 		$this->Template->theme = \Backend::getTheme();
 		$this->Template->base = \Environment::get('base');
@@ -147,10 +146,9 @@ class BackendPctTableTree extends Backend
 		#$this->Template->manager = $GLOBALS['TL_LANG']['MSC']['pct_tableTreeManager'];
 		#$this->Template->managerHref = 'contao/main.php?do=pct_customelements_tags&amp;popup=1';
 		$this->Template->breadcrumb = $GLOBALS['TL_DCA'][$strSource]['list']['sorting']['breadcrumb'];
-
-		$this->Template->value = $this->Session->get('pct_tabletree_selector_search');
+		$this->Template->request_token = '<input type="hidden" value="'.REQUEST_TOKEN.'" name="REQUEST_TOKEN">';
 		
-		$GLOBALS['TL_CONFIG']['debugMode'] = false;
+		$this->Template->value = $this->Session->get('pct_tabletree_selector_search');
 		
 		// add customs panels
 		$arrPanels = array();
@@ -158,10 +156,8 @@ class BackendPctTableTree extends Backend
 		{
 			foreach($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel'] as $callback)
 			{
-				$this->DataContainer = $objDC;
-				
 				$this->import($callback[0]);
-				$this->Template->panels[] = $this->$callback[0]->$callback[1]($this);
+				$arrPanels[] = $this->$callback[0]->$callback[1]($objDC,$this);
 			}
 		}
 		
@@ -169,7 +165,6 @@ class BackendPctTableTree extends Backend
 		{
 			$this->Template->panels = $arrPanels;
 		}
-		
-		$this->Template->output();
+				$this->Template->output();
 	}
 }

@@ -176,7 +176,7 @@ class TableTree extends \Widget
 		$this->loadDataContainer($this->strSource);
 
 		// Store the keyword
-		if (\Input::post('FORM_SUBMIT') == 'item_selector')
+		if (\Input::post('FORM_SUBMIT') == 'pct_tableTreeWidget' && \Input::post('keyword') != $objSession->get('pct_tabletree_selector_search'))
 		{
 			$objSession->set('pct_tabletree_selector_search', \Input::post('keyword'));
 			$this->reload();

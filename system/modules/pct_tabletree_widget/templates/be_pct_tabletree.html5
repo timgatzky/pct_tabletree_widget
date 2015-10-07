@@ -16,6 +16,7 @@
     $objCombiner = new Combiner();
     $objCombiner->add('system/themes/'. $this->theme .'/basic.css');
     $objCombiner->add('system/themes/'. $this->theme .'/main.css');
+    $objCombiner->add(PCT_TABLETREE_PATH.'/assets/css/styles.css');
     echo $objCombiner->getCombinedFile();
   ?>">
   <!--[if IE]><link rel="stylesheet" href="<?php echo TL_ASSETS_URL; ?>system/themes/<?php echo $this->theme; ?>/iefixes.css"><![endif]-->
@@ -34,7 +35,7 @@
   <?php echo $this->javascripts; ?>
 
 </head>
-<body class="<?php echo $this->ua; ?> popup">
+<body class="<?php echo $this->ua; ?> popup pct_tabletreewidget">
   <div id="container">
     <div id="main">
     	<?php if ($this->managerHref): ?>
@@ -44,10 +45,11 @@
       <?php endif; ?>
       
       <form action="<?php echo $this->action; ?>" method="post">
+	  <input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
+	  <input type="hidden" name="FORM_SUBMIT" value="pct_tableTreeWidget">
+		    	    	
 		<?php if ($this->addSearch): ?>
-		  <div id="search">
-		    <input type="hidden" name="FORM_SUBMIT" value="item_selector">
-		    <input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
+		  <div id="search" class="panel align_right">
 		    <input type="text" name="keyword" id="keyword" value="<?php echo $this->value; ?>" class="tl_text<?php if ($this->value != ''): ?> active<?php endif; ?>">
 		    <input type="submit" name="search" value="<?php echo $this->search; ?>" class="tl_submit">
 		  </div>

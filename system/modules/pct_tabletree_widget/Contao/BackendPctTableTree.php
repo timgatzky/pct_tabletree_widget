@@ -53,6 +53,7 @@ class BackendPctTableTree extends Backend
 	public function run()
 	{
 		$objDatabase = \Database::getInstance();
+		$objSession = \Session::getInstance();
 		
 		$this->Template = new \BackendTemplate('be_pct_tabletree');
 		$this->Template->main = '';
@@ -90,6 +91,7 @@ class BackendPctTableTree extends Backend
 		$objDC->keyField = $strKeyField;
 		$objDC->orderField = $strOrderField;
 		$objDC->translationField = $strTranslationField;
+		$objDC->rootsField = $strRootsField;
 		$objDC->conditionsField = $strConditionsField;
 		$objDC->conditions = $strConditions;
 		$objDC->field = $strField;
@@ -102,7 +104,7 @@ class BackendPctTableTree extends Backend
 		   $this->objAjax->executePostActions($objDC);
 		}
 		
-		\Session::getInstance()->set('pctTableTreeRef', \Environment::get('request'));
+		$objSession->set('pctTableTreeRef', \Environment::get('request'));
 		
 		if(!is_array($GLOBALS['TL_DCA'][$strTable]))
 		{
@@ -126,11 +128,13 @@ class BackendPctTableTree extends Backend
 		$arrAttribs['tabletree']['conditionsField'] = $strConditionsField;
 		
 		// get root nodes from session
-		$roots = \Session::getInstance()->get('pct_tabletree_roots');
+		$roots = $_SESSION['pct_tabletree_roots'];# $objSession->get('pct_tabletree_roots');
 		$arrAttribs['tabletree']['roots'] = $roots[$strField];
 		
+		
+		
 		// get the conditions from the session
-		$conditions = \Session::getInstance()->get('pct_tabletree_conditions');
+		$conditions = $objSession->get('pct_tabletree_conditions');
 		$arrAttribs['tabletree']['conditions'] = $conditions[$strField];
 		
 		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDC);

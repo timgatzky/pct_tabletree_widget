@@ -363,6 +363,12 @@ class TableTree extends \Widget
 
 		$this->getNodes();
 		
+		// check if the order field exists
+		if($this->strOrderField && !$objDatabase->fieldExists($this->strOrderField,$this->strSource))
+		{
+			$this->strOrderField = '';
+		}
+		
 		// Load the requested nodes
 		$tree = '';
 		$level = $level * 30;

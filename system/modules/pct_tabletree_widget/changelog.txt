@@ -1,3 +1,7 @@
+### 1.3.2
+Fixed: Check if order field exists before executing the sql query
+Fixed: Use Contaos session to fetch root nodes
+
 ### 1.3.1
 Fixed: An sql issue when toggling nodes
 Added: Support custom panels through $GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel'] Hook

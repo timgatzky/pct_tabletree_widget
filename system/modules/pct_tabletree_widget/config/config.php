@@ -16,7 +16,7 @@
  * Constants
  */
 define(PCT_TABLETREE_PATH, 'system/modules/pct_tabletree_widget');
-define(PCT_TABLETREE_VERSION, '1.3.1');
+define(PCT_TABLETREE_VERSION, '1.3.2');
 
 /**
  * Back end form fields

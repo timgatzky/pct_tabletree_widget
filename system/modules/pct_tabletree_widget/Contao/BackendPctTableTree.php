@@ -128,10 +128,8 @@ class BackendPctTableTree extends Backend
 		$arrAttribs['tabletree']['conditionsField'] = $strConditionsField;
 		
 		// get root nodes from session
-		$roots = $_SESSION['pct_tabletree_roots'];# $objSession->get('pct_tabletree_roots');
+		$roots = $objSession->get('pct_tabletree_roots');
 		$arrAttribs['tabletree']['roots'] = $roots[$strField];
-		
-		
 		
 		// get the conditions from the session
 		$conditions = $objSession->get('pct_tabletree_conditions');

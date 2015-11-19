@@ -17,7 +17,8 @@
 define('TL_MODE', 'BE');
 
 // Apache server
-if(strlen(strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'apache')) > 0 || strlen(strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'litespeed')) > 0 || strlen(strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'nginx')) > 0)
+$serversoftware = strlen(strpos(strtolower($_SERVER['SERVER_SOFTWARE'])));
+if( in_array($serversoftware, array('apache','nginx','litespeed') ))
 {
 	$path_to_initialize = str_replace(substr($_SERVER['SCRIPT_FILENAME'], strpos($_SERVER['SCRIPT_FILENAME'],'system/modules')),'',$_SERVER['SCRIPT_FILENAME']).'system/initialize.php';
 }
@@ -27,7 +28,7 @@ else
 	$path_to_initialize = str_replace('modules\pct_tabletree_widget\assets\html\PageTableTree.php', 'initialize.php', $_SERVER['SCRIPT_FILENAME']);	
 }
 
-if(!file_exists($path_to_initialize))
+if(!file_exists($path_to_initialize) || strlen(strpos($path_to_initialize,'initialize.php')) < 1)
 {
 	throw new \Exception('Contaos initialize.php not found in: '.$path_to_initialize);
 }

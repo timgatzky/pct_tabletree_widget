@@ -1,3 +1,6 @@
+### 1.3.4
+Fixed: Missing parameter in strpos methode
+
 ### 1.3.3
 Update: Add more apache servers to be recognized
 

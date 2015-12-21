@@ -121,10 +121,10 @@ class WidgetTableTree extends \Widget
 		}
 		
 		// flag as sortable
-		if($arrAttributes['sortable'] || $arrAttributes['eval']['isSortable'])
+		if($arrAttributes['sortable'] || $arrAttributes['eval']['isSortable'] || $arrAttributes['eval']['sortable'])
 		{
 			$this->blnIsSortable = true;
-			$this->strOrderSRC = strlen($arrAttributes['tabletree']['orderSRC']) > 0 ? $arrAttributes['tabletree']['orderSRC']: 'orderSRC_'.$this->strName;
+			$this->strOrderSRC = strlen($arrAttributes['eval']['orderField']) > 0 ? $arrAttributes['eval']['orderField']: 'orderSRC_'.$this->strName;
 			$this->strOrderSRCId = $this->strOrderSRC;
 		}
 		

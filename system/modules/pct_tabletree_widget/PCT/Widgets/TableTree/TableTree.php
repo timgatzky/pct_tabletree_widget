@@ -90,7 +90,7 @@ class TableTree extends \Widget
 		$this->import('Database');
 		parent::__construct($arrAttributes);
 		
-		// load the datacontainer
+		// load the datacontainer of the origin table
 		$this->loadDataContainer($this->strTable);
 			
 		// load js
@@ -114,6 +114,9 @@ class TableTree extends \Widget
 		$this->strRootField = strlen($arrAttributes['tabletree']['rootsField']) > 0 ? $arrAttributes['tabletree']['rootsField'] : 'rootNodes';
 		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?: '';
 		$this->strConditions = $this->replaceInsertTags($arrAttributes['tabletree']['conditions'] ?: '');
+		
+		// load the data container of the source table e.g. for permission checks
+		$this->loadDataContainer($this->strSource);
 		
 		if(strlen($arrAttributes['tabletree']['translationField']) > 0)
 		{

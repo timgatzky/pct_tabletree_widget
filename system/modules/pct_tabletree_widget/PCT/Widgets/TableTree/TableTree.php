@@ -90,16 +90,18 @@ class TableTree extends \Widget
 		$this->import('Database');
 		parent::__construct($arrAttributes);
 		
+		// load the datacontainer
+		$this->loadDataContainer($this->strTable);
+			
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
-			
+		
 		// get field defintion from datacontainer since contao does not pass custom evalulation arrays to widgets
 		if(!is_array($arrAttributes['tabletree']))
 		{
-			$this->loadDataContainer($this->strTable);
 			$arrAttributes = array_merge($arrAttributes, $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]);
 		}
-			
+		
 		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true)
 		{
 			$this->blnIsMultiple = true;

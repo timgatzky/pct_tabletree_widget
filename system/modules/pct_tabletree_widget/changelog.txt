@@ -1,5 +1,7 @@
 ### 1.3.5
 Added: Support custom order source fields. Set with ['tabletree']['orderSRC'] = 'myOrderSRC'
+Added: Missing data container array in TableTree class
+Added: Load the data container of the source table in TableTree class e.g. for permission checks
 
 ### 1.3.4
 Fixed: Missing parameter in strpos methode

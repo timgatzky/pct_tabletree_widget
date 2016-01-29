@@ -1,3 +1,7 @@
+### 1.4.0
+Update: Remove the Theme.toggleSelect call and use the new toggle_select class
+Update: PHP7 ready
+
 ### 1.3.5
 Added: Support custom order source fields. Set with ['eval']['orderField'] = 'myOrderSRC'
 Added: Missing data container array in TableTree class

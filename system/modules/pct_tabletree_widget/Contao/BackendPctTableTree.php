@@ -158,8 +158,7 @@ class BackendPctTableTree extends Backend
 		{
 			foreach($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel'] as $callback)
 			{
-				$this->import($callback[0]);
-				$arrPanels[] = $this->$callback[0]->$callback[1]($objDC,$this);
+				$arrPanels[] = \System::importStatic($callback[0])->{$callback[1]}($objDC,$this);
 			}
 		}
 		

@@ -117,8 +117,7 @@ class TableTreeHelper extends \Backend
 					{
 						if (is_array($callback))
 						{
-							$this->import($callback[0]);
-							$varValue = $this->$callback[0]->$callback[1]($varValue, $objDC);
+							\System::importStatic($callback[0])->{$callback[1]}($varValue, $objDC);
 						}
 						elseif (is_callable($callback))
 						{

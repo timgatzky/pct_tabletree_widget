@@ -110,7 +110,7 @@ class TableTree extends \Widget
 		$this->strSource = $arrAttributes['tabletree']['source'];
 		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'id';
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
-		$this->strOrderField = strlen($arrAttributes['tabletree']['orderField']) > 0 ? $arrAttributes['tabletree']['orderField'] : 'sorting';
+		$this->strOrderField = $arrAttributes['tabletree']['orderField'];
 		$this->strRootField = strlen($arrAttributes['tabletree']['rootsField']) > 0 ? $arrAttributes['tabletree']['rootsField'] : 'rootNodes';
 		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?: '';
 		$this->strConditions = $this->replaceInsertTags($arrAttributes['tabletree']['conditions'] ?: '');
@@ -176,7 +176,7 @@ class TableTree extends \Widget
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
 		$strTranslationField = $this->strTranslationField;
-			
+		
 		$this->import('BackendUser', 'User');
 		$this->loadDataContainer($this->strSource);
 

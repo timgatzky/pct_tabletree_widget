@@ -73,10 +73,6 @@ class BackendPctTableTree extends Backend
 		$strOrderField = \Input::get('orderField') ?: 'id';
 		$strConditionsField = \Input::get('conditionsField') ?: '';
 		
-		if($objDatabase->fieldExists('sorting',$strTable))
-		{
-			$strOrderField = 'sorting';
-		}
 		$strRootsField = \Input::get('rootsField') ?: 'rootNodes';
 		$strTranslationField = \Input::get('translationField');
 		

@@ -1,3 +1,6 @@
+### 1.4.1
+Fixed: Do not override a sorting field value in BackendPctTableTree class
+
 ### 1.4.0
 Update: Remove the Theme.toggleSelect call and use the new toggle_select class
 Update: PHP7 ready

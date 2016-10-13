@@ -125,11 +125,17 @@ class BackendPctTableTree extends Backend
 		
 		// get root nodes from session
 		$roots = $objSession->get('pct_tabletree_roots');
-		$arrAttribs['tabletree']['roots'] = $roots[$strField];
+		if(is_array($roots[$strField]))
+		{
+			$arrAttribs['tabletree']['roots'] = array_filter($roots[$strField]);
+		}
 		
 		// get the conditions from the session
 		$conditions = $objSession->get('pct_tabletree_conditions');
-		$arrAttribs['tabletree']['conditions'] = $conditions[$strField];
+		if($conditions[$strField])
+		{
+			$arrAttribs['tabletree']['conditions'] = $conditions[$strField];
+		}
 		
 		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDC);
 		$this->Template->main = $objWidget->generate();

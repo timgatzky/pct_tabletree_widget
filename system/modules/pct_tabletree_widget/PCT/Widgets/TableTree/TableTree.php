@@ -464,6 +464,8 @@ class TableTree extends \Widget
 		// Set the protection status
 		$objRow->protected = ($objRow->protected || $protectedRow);
 
+		$metaWizardKey = (version_compare(VERSION,'3.2','<=') ? 'title': 'label');
+		
 		// Add the current row
 		if (count($childs) > 0)
 		{
@@ -472,7 +474,7 @@ class TableTree extends \Widget
 			{
 				$arrTranslations = deserialize($objRow->{$strTanslationField});
 				$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
-				$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
+				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
 			}
 			
 			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
@@ -484,7 +486,7 @@ class TableTree extends \Widget
 			{
 				$arrTranslations = deserialize($objRow->{$strTanslationField});
 				$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
-				$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
+				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
 			}
 			$return .= $strLabel.'</div> <div class="tl_right">';
 		}

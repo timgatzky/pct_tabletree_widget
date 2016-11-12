@@ -1,3 +1,6 @@
+### 1.4.3
+Update: Added support for translation widgets based on metaWizard in Contao 3.2
+
 ### 1.4.2
 Fixed: Filter roots array coming from session to avoid empty list views (#9)
 Update: Improved the custom conditions sql query structure

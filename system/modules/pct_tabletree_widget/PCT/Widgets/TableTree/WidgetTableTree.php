@@ -165,7 +165,7 @@ class WidgetTableTree extends \Widget
 		{
 			$arrNew = \Input::post($this->strOrderSRC);
 			// Only proceed if the value has changed
-			if ($arrNew !== deserialize($this->activeRecord->{$this->strOrderSRC}))
+			if ($arrNew !== deserialize($this->activeRecord->{$this->strOrderSRC}) && \Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable))
 			{
 				if($this->blnIsMultiple)
 				{

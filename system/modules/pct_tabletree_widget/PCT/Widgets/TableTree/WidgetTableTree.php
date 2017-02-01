@@ -218,7 +218,7 @@ class WidgetTableTree extends \Widget
 				$this->varValue = array($this->varValue);
 			}
 			
-			$objRows = \Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE ".($this->strConditions ? $this->strConditions : " ")." ".\Database::getInstance()->findInSet($strKeyField,$this->varValue));
+			$objRows = \Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE ".($this->strConditions ? $this->strConditions ." AND " : " ")." ".\Database::getInstance()->findInSet($strKeyField,$this->varValue));
 			
 			if ($objRows->numRows > 0)
 			{

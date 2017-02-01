@@ -1,8 +1,6 @@
-### 1.4.4
+### 1.4.3
 Fixed: Append missing AND when a custom condition is set before the FIND_IN_SET statement (#10)
 Update: Check if orderSRC field exists before validation
-
-### 1.4.3
 Update: Added support for translation widgets based on metaWizard in Contao 3.2
 
 ### 1.4.2

@@ -280,7 +280,7 @@ class WidgetTableTree extends \Widget
 					{
 						$tmp[$id] = $arrValues[$id];
 					}
-					$arrSet = $tmp;
+					$arrValues = $tmp;
 					unset($tmp);
 				}
 			}

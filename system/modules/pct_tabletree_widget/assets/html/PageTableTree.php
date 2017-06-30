@@ -2,37 +2,34 @@
 
 /**
  * Contao Open Source CMS
- * 
- * Copyright (C) 2005-2013 Leo Feyer
- * 
- * @copyright	Tim Gatzky 2014, Premium Contao Webworks, Premium Contao Themes
- * @author		Tim Gatzky <info@tim-gatzky.de>
- * @package		pct_tabltree
- * @link		http://contao.org
+ *
+ * Copyright (c) 2005-2013 Leo Feyer
+ *
+ * @package Core
+ * @link    https://contao.org
+ * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
 /**
  * Initialize the system
  */
 define('TL_MODE', 'BE');
+define('TL_SCRIPT', 'PCT_TABLETREE_WIDGET');
 
-// Apache server
-if(strlen(strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'apache')) > 0 || strlen(strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'litespeed')) > 0 || strlen(strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'nginx')) > 0)
+// contao 3 structure
+if( file_exists( realpath($_SERVER['DOCUMENT_ROOT']) . '/system/initialize.php') )
 {
-	$path_to_initialize = str_replace(substr($_SERVER['SCRIPT_FILENAME'], strpos($_SERVER['SCRIPT_FILENAME'],'system/modules')),'',$_SERVER['SCRIPT_FILENAME']).'system/initialize.php';
+	require_once realpath($_SERVER['DOCUMENT_ROOT']) . '/system/initialize.php';
 }
-// IIS or anything else
+// contao 4 structure runs in a relative subfolder
+else if( file_exists( realpath($_SERVER['DOCUMENT_ROOT'].'/../') . '/system/initialize.php') )
+{
+	require_once realpath($_SERVER['DOCUMENT_ROOT'].'/../') . '/system/initialize.php';
+}
 else
-{
-	$path_to_initialize = str_replace('modules\pct_tabletree_widget\assets\html\PageTableTree.php', 'initialize.php', $_SERVER['SCRIPT_FILENAME']);	
-}
-
-if(!file_exists($path_to_initialize) || strlen(strpos($path_to_initialize,'initialize.php')) < 1)
 {
 	throw new \Exception('Contaos initialize.php not found in: '.$path_to_initialize);
 }
-
-require_once $path_to_initialize;
 
 /**
  * Instantiate the controller

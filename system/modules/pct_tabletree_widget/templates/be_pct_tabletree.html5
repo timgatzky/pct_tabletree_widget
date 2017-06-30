@@ -12,6 +12,27 @@
   <title><?php echo $this->title; ?> - Contao Open Source CMS <?php echo VERSION; ?></title>
   <base href="<?php echo $this->base; ?>">
   <meta name="generator" content="Contao Open Source CMS">
+ 
+   <!-- contao 4.4 -->
+ <?php if(version_compare(VERSION, '4.4','>=')): ?> 
+	  <meta name="viewport" content="width=device-width,initial-scale=1.0,shrink-to-fit=no">
+	  <meta name="referrer" content="origin">
+	
+	  <link rel="stylesheet" href="<?= TL_ASSETS_URL ?>system/themes/<?= $this->theme ?>/fonts.css">
+	  <link rel="stylesheet" href="<?= TL_ASSETS_URL ?>system/themes/<?= $this->theme ?>/basic.css">
+	  <link rel="stylesheet" href="<?= TL_ASSETS_URL ?>system/themes/<?= $this->theme ?>/main.css">
+	  <link rel="stylesheet" href="<?= PCT_TABLETREE_PATH ?>/assets/css/styles.css">
+	  <?= $this->stylesheets ?>
+	
+	  <script><?= $this->getLocaleString() ?></script>
+	  <script src="<?= TL_ASSETS_URL ?>assets/mootools/js/mootools.min.js"></script>
+	  <script src="<?= TL_ASSETS_URL ?>bundles/contaocore/mootao.min.js"></script>
+	  <script src="<?= TL_ASSETS_URL ?>bundles/contaocore/core.min.js"></script>
+	  <script src="<?= TL_ASSETS_URL ?>system/themes/<?= $this->theme ?>/hover.js"></script>
+	  <script><?= $this->getDateString() ?></script>
+	  <?= $this->javascripts ?>
+  <?php else: ?>
+<!-- contao <= 4.4 -->
    <link rel="stylesheet" href="<?php
     $objCombiner = new Combiner();
     $objCombiner->add('system/themes/'. $this->theme .'/basic.css');
@@ -33,9 +54,10 @@
   ?>"></script>
   <script><?php echo $this->getDateString(); ?></script>
   <?php echo $this->javascripts; ?>
+<?php endif; ?>
 
 </head>
-<body class="<?php echo $this->ua; ?> popup pct_tabletreewidget">
+<body class="<?php echo $this->ua; ?> popup pct_tabletreewidget <?= (version_compare(VERSION, '3.5','>') ? 'contao-ht35' : ''); ?>">
   <div id="container">
     <div id="main">
     	<?php if ($this->managerHref): ?>

@@ -32,6 +32,7 @@ if(count($_subs) > 0)
 	$_subfolder = '/'.implode('/', $_subs).'/';
 }
 
+// contao 3 structure
 if( file_exists( realpath($_SERVER['DOCUMENT_ROOT']). $_subfolder . '/system/initialize.php') )
 {
 	require_once realpath($_SERVER['DOCUMENT_ROOT']). $_subfolder . '/system/initialize.php';
@@ -43,7 +44,7 @@ else if( file_exists( realpath($_SERVER['DOCUMENT_ROOT'].'/../') . '/system/init
 }
 else
 {
-	throw new \Exception('Contaos initialize.php not found in: '.$path_to_initialize);
+	throw new \Exception('Contaos initialize.php not found');
 }
 
 unset($_subs);

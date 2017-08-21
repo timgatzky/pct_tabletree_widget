@@ -1,3 +1,6 @@
+### 1.5.2
+Fixed: Do not set a pid value as sql condition automatically in tables that contain a pid field (#14)
+
 ### 1.5.1
 Update: Try to locate subfolder installations in PageTableTree.php (#12)
 

@@ -44,6 +44,10 @@ class TableTreeHelper extends \Backend
 				$arrData['tabletree']['keyField'] = \Input::get('keyField');
 				$arrData['tabletree']['orderField'] = \Input::get('orderField');
 				$arrData['tabletree']['translationField'] = \Input::get('translationField');
+				$arrData['tabletree']['rootsField'] = \Input::get('rootsField');
+				$arrData['tabletree']['roots'] = \Input::get('roots');
+				$arrData['tabletree']['conditions'] = \Input::get('conditions');
+				
 				$objWidget = new \PCT\Widgets\TableTree($arrData, $objDC);
 				echo $objWidget->generateAjax($this->strAjaxId, $objDC->field, $arrData['tabletree']['valueField'], $arrData['tabletree']['keyField'], intval(\Input::post('level')));
 				exit;
@@ -57,6 +61,10 @@ class TableTreeHelper extends \Backend
 				$strKeyField = $objDC->keyField = \Input::post('keyField');
 				$strOrderField = $objDC->orderField = \Input::post('orderField');
 				$strTranslationField = $objDC->translationField = \Input::post('translationField');
+				$strRootsField = $objDC->rootsField = \Input::post('rootsField');
+				$strRoots = $objDC->roots = \Input::post('roots');
+				$strConditionsField = $objDC->conditionsField = \Input::post('conditionsField');
+				$strConditions = $objDC->conditions = \Input::post('conditions');
 				
 				$objDatabase = \Database::getInstance();
 				
@@ -140,6 +148,10 @@ class TableTreeHelper extends \Backend
 				$arrAttribs['tabletree']['keyField'] = $strKeyField;
 				$arrAttribs['tabletree']['orderField'] = $strOrderField;
 				$arrAttribs['tabletree']['translationField'] = $strTranslationField;
+				$arrAttribs['tabletree']['rootsField'] = $strRootsField;
+				$arrAttribs['tabletree']['roots'] = $strRoots;
+				$arrAttribs['tabletree']['conditionsField'] = $strConditionsField;
+				$arrAttribs['tabletree']['conditions'] = $strConditions;
 				
 				$objWidget = new $GLOBALS['BE_FFL']['pct_tabletree']($arrAttribs);
 				echo $objWidget->generate();
@@ -168,7 +180,7 @@ class TableTreeHelper extends \Backend
 					$this->strAjaxKey = preg_replace('/(.*)_[0-9a-zA-Z]+$/', '$1', $this->strAjaxKey);
 					$this->strAjaxName = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', \Input::post('name'));
 				}
-
+				
 				$nodes = $objSession->get($this->strAjaxKey);
 				$nodes[$this->strAjaxId] = intval(\Input::post('state'));
 				$objSession->set($this->strAjaxKey, $nodes);

@@ -13,7 +13,7 @@
  *
  * @returns {boolean}
  */
-AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField, keyField, level) 
+AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField, keyField, conditions, level) 
 {
 	el.blur();
 	Backend.getScrollOffset();
@@ -75,7 +75,7 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField,
 			// HOOK
 			window.fireEvent('ajax_change');
 		}
-	}).post({'action':'loadTabletree', 'loadCustomElementFields':1, 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'valueField':valueField, 'keyField':keyField,'state':1, 'REQUEST_TOKEN':Contao.request_token});
+	}).post({'action':'loadTabletree', 'loadCustomElementFields':1, 'id':id, 'level':level, 'field':field, 'name':name, 'source':source, 'valueField':valueField, 'keyField':keyField,'state':1,'conditions':conditions, 'REQUEST_TOKEN':Contao.request_token});
 	return false;
 }
 
@@ -145,7 +145,7 @@ Backend.openModalTabletreeSelector = function(options)
 					AjaxRequest.hideBox();
 					window.fireEvent('ajax_change');
 				}
-			}).post({'action':act, 'loadCustomElementFields':1, 'name':opt.id,'field':opt.id,'source':options.source,'table':options.table, 'valueField':options.valueField, 'keyField':options.keyField,'translationField':options.translationField, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
+			}).post({'action':act, 'loadCustomElementFields':1, 'name':opt.id,'field':opt.id,'source':options.source,'table':options.table, 'valueField':options.valueField, 'keyField':options.keyField,'translationField':options.translationField,'rootsField':options.rootsField,'roots':options.roots,'conditions':options.conditions,'conditionsField':options.conditionsField, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
 		}
 		this.hide();
 	});

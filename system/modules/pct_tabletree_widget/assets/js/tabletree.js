@@ -27,14 +27,14 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField,
 		if (item.getStyle('display') == 'none') 
 		{
 			item.setStyle('display', 'inline');
-			image.src = image.src.replace('folPlus.gif', 'folMinus.gif');
+			image.src = image.src.replace('folPlus', 'folMinus');
 			$(el).store('tip:title', Contao.lang.collapse);
 			new Request.Contao({field:el}).post({'action':'toggleTabletree', 'id':id, 'state':1, 'REQUEST_TOKEN':Contao.request_token});
 		} 
 		else 
 		{
 			item.setStyle('display', 'none');
-			image.src = image.src.replace('folMinus.gif', 'folPlus.gif');
+			image.src = image.src.replace('folMinus', 'folPlus');
 			$(el).store('tip:title', Contao.lang.expand);
 			new Request.Contao({field:el}).post({'action':'toggleTabletree', 'id':id, 'state':0, 'REQUEST_TOKEN':Contao.request_token});
 		}
@@ -69,7 +69,7 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField,
 			});
 
 			$(el).store('tip:title', Contao.lang.collapse);
-			image.src = image.src.replace('folPlus.gif', 'folMinus.gif');
+			image.src = image.src.replace('folPlus', 'folMinus');
 			AjaxRequest.hideBox();
 
 			// HOOK

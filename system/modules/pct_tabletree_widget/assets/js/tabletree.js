@@ -133,19 +133,19 @@ Backend.openModalTabletreeSelector = function(options)
 		} 
 		else 
 		{
-			$('ctrl_'+opt.id).value = val.join("\t");
+			$$('#ctrl_'+opt.id)[0].value = val.join("\t");
 			var act = 'reloadTabletree';
 			new Request.Contao({
-				field: $('ctrl_'+opt.id),
+				field: $$('#ctrl_'+opt.id)[0],
 				evalScripts: false,
 				onRequest: AjaxRequest.displayBox(Contao.lang.loading + ' …'),
 				onSuccess: function(txt, json) {
-					$('ctrl_'+opt.id).getParent('div').set('html', json.content);
+					$$('#ctrl_'+opt.id)[0].getParent('div').set('html', json.content);
 					json.javascript && Browser.exec(json.javascript);
 					AjaxRequest.hideBox();
 					window.fireEvent('ajax_change');
 				}
-			}).post({'action':act, 'loadCustomElementFields':1, 'name':opt.id,'field':opt.id,'source':options.source,'table':options.table, 'valueField':options.valueField, 'keyField':options.keyField,'translationField':options.translationField,'rootsField':options.rootsField,'roots':options.roots,'conditions':options.conditions,'conditionsField':options.conditionsField, 'value':$('ctrl_'+opt.id).value, 'REQUEST_TOKEN':Contao.request_token});
+			}).post({'action':act, 'loadCustomElementFields':1, 'name':opt.id,'field':opt.id,'source':options.source,'table':options.table, 'valueField':options.valueField, 'keyField':options.keyField,'translationField':options.translationField,'rootsField':options.rootsField,'roots':options.roots,'conditions':options.conditions,'conditionsField':options.conditionsField, 'value':$$('#ctrl_'+opt.id)[0].value, 'REQUEST_TOKEN':Contao.request_token});
 		}
 		this.hide();
 	});

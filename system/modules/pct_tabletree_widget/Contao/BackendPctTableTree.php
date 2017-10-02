@@ -73,7 +73,7 @@ class BackendPctTableTree extends Backend
 		$strOrderField = \Input::get('orderField') ?: 'id';
 		$strConditionsField = \Input::get('conditionsField') ?: '';
 		
-		$strRootsField = \Input::get('rootsField') ?: 'rootNodes';
+		$strRootsField = \Input::get('rootsField');
 		$strTranslationField = \Input::get('translationField');
 		
 		// Define the current ID
@@ -129,7 +129,7 @@ class BackendPctTableTree extends Backend
 		{
 			$arrAttribs['tabletree']['roots'] = array_filter($roots[$strField]);
 		}
-		
+
 		// get the conditions from the session
 		$conditions = $objSession->get('pct_tabletree_conditions');
 		if($conditions[$strField])
@@ -168,6 +168,7 @@ class BackendPctTableTree extends Backend
 		{
 			$this->Template->panels = $arrPanels;
 		}
-				$this->Template->output();
+		
+		$this->Template->output();
 	}
 }

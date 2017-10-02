@@ -14,7 +14,7 @@
  * Initialize the system
  */
 define('TL_MODE', 'BE');
-define('TL_SCRIPT', 'PCT_TABLETREE_WIDGET');
+define('TL_SCRIPT', 'system/modules/pct_tabletree_widget/assets/html/PageTableTree.php');
 
 $_subfolder = '';
 $_subs = array();

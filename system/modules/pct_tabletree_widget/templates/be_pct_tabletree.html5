@@ -28,7 +28,6 @@
 	  <script src="<?= TL_ASSETS_URL ?>assets/mootools/js/mootools.min.js"></script>
 	  <script src="<?= TL_ASSETS_URL ?>bundles/contaocore/mootao.min.js"></script>
 	  <script src="<?= TL_ASSETS_URL ?>bundles/contaocore/core.min.js"></script>
-	  <script src="<?= TL_ASSETS_URL ?>system/themes/<?= $this->theme ?>/hover.js"></script>
 	  <script><?= $this->getDateString() ?></script>
 	  <?= $this->javascripts ?>
   <?php else: ?>

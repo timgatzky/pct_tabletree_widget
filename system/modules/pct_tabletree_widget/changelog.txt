@@ -1,3 +1,6 @@
+### 1.5.4
+Update: Support the DCA label_callback
+
 ### 1.5.3
 Fixed: Define TL_SCRIPT with path to the external file (#16)
 Fixed: Roots did not apply after reloadTabetree ajax action (#17)

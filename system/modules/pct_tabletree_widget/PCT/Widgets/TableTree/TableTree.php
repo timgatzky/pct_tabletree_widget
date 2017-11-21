@@ -467,6 +467,8 @@ class TableTree extends \Widget
 
 		$metaWizardKey = (version_compare(VERSION,'3.2','<=') ? 'title': 'label');
 		
+		$label_callback = $GLOBALS['TL_DCA'][$this->strSource]['list']['label']['label_callback'];	
+		
 		// Add the current row
 		if (count($childs) > 0)
 		{
@@ -476,6 +478,12 @@ class TableTree extends \Widget
 				$arrTranslations = deserialize($objRow->{$strTanslationField});
 				$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
 				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
+			}
+			
+			// list_label_callback
+			if(is_array($label_callback) && count($label_callback))
+			{
+				$strLabel = \Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
 			}
 			
 			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
@@ -489,6 +497,13 @@ class TableTree extends \Widget
 				$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
 				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
 			}
+			
+			// list_label_callback
+			if(is_array($label_callback) && count($label_callback))
+			{
+				$strLabel = \Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
+			}
+			
 			$return .= $strLabel.'</div> <div class="tl_right">';
 		}
 

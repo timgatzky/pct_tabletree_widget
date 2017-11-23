@@ -466,7 +466,8 @@ class TableTree extends \Widget
 
 		$metaWizardKey = (version_compare(VERSION,'3.2','<=') ? 'title': 'label');
 		
-		$label_callback = $GLOBALS['TL_DCA'][$this->strSource]['list']['label']['label_callback'];	
+		// label callback
+		$label_callback = $GLOBALS['PCT_TABLETREE_WIDGET'][$this->strSource]['label_callback'];	
 		
 		// Add the current row
 		if (count($childs) > 0)

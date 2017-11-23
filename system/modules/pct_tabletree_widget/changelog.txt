@@ -1,3 +1,7 @@
+### 1.5.5
+Fixed: List view did not render nesteed entries correctly anymore (#22)
+Update: Backend styling (#23)
+
 ### 1.5.4
 Update: Support the DCA label_callback
 

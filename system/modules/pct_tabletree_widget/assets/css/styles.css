@@ -2,5 +2,6 @@
 .pct_tabletreewidget #search {margin-bottom: 0;}
 .pct_tabletreewidget .panel {margin: 9px 18px;}
 .pct_tabletreewidget .align_right {text-align: right;}
+.pct_tabletreewidget li {cursor: pointer;}
 .pct_tabletreewidget li:hover {background-color: rgb(235,253,215);}
 .pct_tabletreewidget.contao-ht35 li:hover {background-color: rgba(246,124,0,.25);}

@@ -289,13 +289,12 @@ class TableTree extends \Widget
 			elseif ($this->User->isAdmin || empty($this->arrRootNodes))
 			{
 				// check if table contains a pid field
-				#$hasPid = false;
-				#if($objDatabase->fieldExists('pid',$this->strSource))
-				#{
-				#	$hasPid = true;
-				#}
-				
-				$objRows = $objDatabase->prepare("SELECT ".$strKeyField." FROM ".$this->strSource.($this->strConditions ? " WHERE  ".$this->strConditions:"") . ($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
+				$hasPid = false;
+				if($objDatabase->fieldExists('pid',$this->strSource))
+				{
+					$hasPid = true;
+				}
+				$objRows = $objDatabase->prepare("SELECT ".$strKeyField." FROM ".$this->strSource." WHERE ".($hasPid == true ? "pid=?" : $strKeyField."!=''").($this->strConditions ? " AND ".$this->strConditions:"") . ($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
 				
 				while ($objRows->next())
 				{

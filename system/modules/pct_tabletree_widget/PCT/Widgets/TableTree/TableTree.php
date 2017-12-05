@@ -294,8 +294,8 @@ class TableTree extends \Widget
 				{
 					$hasPid = true;
 				}
-				$objRows = $objDatabase->prepare("SELECT ".$strKeyField." FROM ".$this->strSource." WHERE ".($hasPid == true ? "pid=?" : $strKeyField."!=''").($this->strConditions ? " AND ".$this->strConditions:"") . ($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
 				
+				$objRows = $objDatabase->prepare("SELECT ".$strKeyField." FROM ".$this->strSource." WHERE ".($hasPid == true ? " (pid>? OR pid=0) " : $strKeyField."!=''").($this->strConditions ? " AND ".$this->strConditions:"") . ($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
 				while ($objRows->next())
 				{
 					$tree .= $this->renderTree($objRows->{$strKeyField}, -20);

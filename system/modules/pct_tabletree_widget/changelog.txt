@@ -1,5 +1,8 @@
+### 1.5.6
+Fixed: In nested tables pid should be greater than 0 or equals 0 for the main query
+
 ### 1.5.5
-Fixed: List view did not render nesteed entries correctly anymore (#22)
+Fixed: List view did not render nested entries correctly anymore (#22)
 Update: Backend styling (#23)
 Update: Changed label callback global to: $GLOBALS['PCT_TABLETREE_WIDGET'][--SOURCE--]['label_callback'] to avoid interference with Contaos DCA
 

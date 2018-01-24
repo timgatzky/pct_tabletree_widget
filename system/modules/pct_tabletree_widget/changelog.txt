@@ -1,3 +1,6 @@
+### 1.5.8
+Update: Put constants in quotations for php 7.2
+
 ### 1.5.7
 Fixed: Do not render entries with pid > 0 to avoid showing nested records in root view
 

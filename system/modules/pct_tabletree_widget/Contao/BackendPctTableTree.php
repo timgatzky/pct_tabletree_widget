@@ -156,7 +156,7 @@ class BackendPctTableTree extends Backend
 		
 		// add customs panels
 		$arrPanels = array();
-		if (isset($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel']) && count($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel']) > 0)
+		if (isset($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel']) && !empty($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel']))
 		{
 			foreach($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel'] as $callback)
 			{

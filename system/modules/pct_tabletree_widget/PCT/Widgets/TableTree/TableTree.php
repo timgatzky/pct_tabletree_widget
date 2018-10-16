@@ -482,7 +482,7 @@ class TableTree extends \Widget
 			}
 			
 			// list_label_callback
-			if(is_array($label_callback) && count($label_callback))
+			if(is_array($label_callback) && !empty($label_callback))
 			{
 				$strLabel = \Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
 			}
@@ -500,7 +500,7 @@ class TableTree extends \Widget
 			}
 			
 			// list_label_callback
-			if(is_array($label_callback) && count($label_callback))
+			if(is_array($label_callback) && !empty($label_callback))
 			{
 				$strLabel = \Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
 			}
@@ -530,7 +530,7 @@ class TableTree extends \Widget
 		$return .= '</div><div style="clear:both"></div></li>';
 
 		// Begin a new submenu
-		if (count($childs) > 0 && ($blnIsOpen || $this->Session->get('pct_tabletree_selector_search') != ''))
+		if (!empty($childs) && is_array($childs) && ($blnIsOpen || $this->Session->get('pct_tabletree_selector_search') != ''))
 		{
 			$return .= '<li class="parent" id="'.$node.'_'.$id.'"><ul class="level_'.$level.'">';
 

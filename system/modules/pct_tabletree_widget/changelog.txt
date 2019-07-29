@@ -1,3 +1,6 @@
+### 1.5.9
+Fixed: Tables with a unused pid field (like CC tables but not being actual child tables) did not show entries (#32) 
+
 ### 1.5.8
 Update: PHP 7.2 compatibility (#30)
 

@@ -290,7 +290,7 @@ class TableTree extends \Widget
 			{
 				// check if table contains a pid field
 				$hasPid = false;
-				if($objDatabase->fieldExists('pid',$this->strSource))
+				if($objDatabase->fieldExists('pid',$this->strSource)  && in_array( (int)$GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['mode'], array(4,5) ) )
 				{
 					$hasPid = true;
 				}

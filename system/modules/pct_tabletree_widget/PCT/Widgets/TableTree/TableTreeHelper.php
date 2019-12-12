@@ -21,7 +21,7 @@ namespace PCT\Widgets\TableTree;
  * Class file
  * TableTreeHelper
  */
-class TableTreeHelper extends \Backend
+class TableTreeHelper extends \Contao\Backend
 {
 	/**
 	 * Backend ajax requests
@@ -39,37 +39,37 @@ class TableTreeHelper extends \Backend
 				$arrData['id'] = $this->strAjaxName ?: $objDC->id;
 				$arrData['name'] = $objDC->field;
 				$arrData['field'] = $objDC->field;
-				$arrData['tabletree']['source'] = \Input::get('source');
-				$arrData['tabletree']['valueField'] = \Input::get('valueField');
-				$arrData['tabletree']['keyField'] = \Input::get('keyField');
-				$arrData['tabletree']['orderField'] = \Input::get('orderField');
-				$arrData['tabletree']['translationField'] = \Input::get('translationField');
-				$arrData['tabletree']['rootsField'] = \Input::get('rootsField');
-				$arrData['tabletree']['roots'] = \Input::get('roots');
-				$arrData['tabletree']['conditions'] = \Input::get('conditions');
+				$arrData['tabletree']['source'] = \Contao\Input::get('source');
+				$arrData['tabletree']['valueField'] = \Contao\Input::get('valueField');
+				$arrData['tabletree']['keyField'] = \Contao\Input::get('keyField');
+				$arrData['tabletree']['orderField'] = \Contao\Input::get('orderField');
+				$arrData['tabletree']['translationField'] = \Contao\Input::get('translationField');
+				$arrData['tabletree']['rootsField'] = \Contao\Input::get('rootsField');
+				$arrData['tabletree']['roots'] = \Contao\Input::get('roots');
+				$arrData['tabletree']['conditions'] = \Contao\Input::get('conditions');
 				
 				$objWidget = new \PCT\Widgets\TableTree($arrData, $objDC);
-				echo $objWidget->generateAjax($this->strAjaxId, $objDC->field, $arrData['tabletree']['valueField'], $arrData['tabletree']['keyField'], intval(\Input::post('level')));
+				echo $objWidget->generateAjax($this->strAjaxId, $objDC->field, $arrData['tabletree']['valueField'], $arrData['tabletree']['keyField'], intval(\Contao\Input::post('level')));
 				exit;
 				break;
 			case 'reloadTabletree':
-				$intId = \Input::post('id');
-				$intDcaId = $objDC->id = \Input::get('id');
-				$strField = $objDC->field = \Input::post('name');
-				$strSource = $objDC->source = \Input::post('source');
-				$strValueField = $objDC->valueField = \Input::post('valueField');
-				$strKeyField = $objDC->keyField = \Input::post('keyField');
-				$strOrderField = $objDC->orderField = \Input::post('orderField');
-				$strTranslationField = $objDC->translationField = \Input::post('translationField');
-				$strRootsField = $objDC->rootsField = \Input::post('rootsField');
-				$strRoots = $objDC->roots = \Input::post('roots');
-				$strConditionsField = $objDC->conditionsField = \Input::post('conditionsField');
-				$strConditions = $objDC->conditions = \Input::post('conditions');
+				$intId = \Contao\Input::post('id');
+				$intDcaId = $objDC->id = \Contao\Input::get('id');
+				$strField = $objDC->field = \Contao\Input::post('name');
+				$strSource = $objDC->source = \Contao\Input::post('source');
+				$strValueField = $objDC->valueField = \Contao\Input::post('valueField');
+				$strKeyField = $objDC->keyField = \Contao\Input::post('keyField');
+				$strOrderField = $objDC->orderField = \Contao\Input::post('orderField');
+				$strTranslationField = $objDC->translationField = \Contao\Input::post('translationField');
+				$strRootsField = $objDC->rootsField = \Contao\Input::post('rootsField');
+				$strRoots = $objDC->roots = \Contao\Input::post('roots');
+				$strConditionsField = $objDC->conditionsField = \Contao\Input::post('conditionsField');
+				$strConditions = $objDC->conditions = \Contao\Input::post('conditions');
 				
-				$objDatabase = \Database::getInstance();
+				$objDatabase = \Contao\Database::getInstance();
 				
 				// Handle the keys in "edit multiple" mode
-				if (\Input::get('act') == 'editAll')
+				if (\Contao\Input::get('act') == 'editAll')
 				{
 					$intId = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', $strField);
 					$strField = preg_replace('/(.*)_[0-9a-zA-Z]+$/', '$1', $strField);
@@ -111,7 +111,7 @@ class TableTreeHelper extends \Backend
 				}
 				
 				// Set the new value
-				$varValue = trimsplit('\t',\Input::post('value',true));
+				$varValue = trimsplit('\t',\Contao\Input::post('value',true));
 				
 				if(!is_array($varValue))
 				{
@@ -125,7 +125,7 @@ class TableTreeHelper extends \Backend
 					{
 						if (is_array($callback))
 						{
-							\System::importStatic($callback[0])->{$callback[1]}($varValue, $objDC);
+							\Contao\System::importStatic($callback[0])->{$callback[1]}($varValue, $objDC);
 						}
 						elseif (is_callable($callback))
 						{
@@ -171,18 +171,18 @@ class TableTreeHelper extends \Backend
 		{
 			case 'toggleTabletree':
 			case 'loadTabletree':
-				$objSession = \Session::getInstance();
-				$this->strAjaxId = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', \Input::post('id'));
-				$this->strAjaxKey = str_replace('_' . $this->strAjaxId, '', \Input::post('id'));
+				$objSession = \Contao\Session::getInstance();
+				$this->strAjaxId = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', \Contao\Input::post('id'));
+				$this->strAjaxKey = str_replace('_' . $this->strAjaxId, '', \Contao\Input::post('id'));
 				
-				if (\Input::get('act') == 'editAll')
+				if (\Contao\Input::get('act') == 'editAll')
 				{
 					$this->strAjaxKey = preg_replace('/(.*)_[0-9a-zA-Z]+$/', '$1', $this->strAjaxKey);
-					$this->strAjaxName = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', \Input::post('name'));
+					$this->strAjaxName = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', \Contao\Input::post('name'));
 				}
 				
 				$nodes = $objSession->get($this->strAjaxKey);
-				$nodes[$this->strAjaxId] = intval(\Input::post('state'));
+				$nodes[$this->strAjaxId] = intval(\Contao\Input::post('state'));
 				$objSession->set($this->strAjaxKey, $nodes);
 				break;
 		}

@@ -43,7 +43,7 @@ class BackendPctTableTree extends Backend
 		parent::__construct();
 
 		$this->User->authenticate();
-		\System::loadLanguageFile('default');
+		\Contao\System::loadLanguageFile('default');
 	}
 
 
@@ -52,32 +52,32 @@ class BackendPctTableTree extends Backend
 	 */
 	public function run()
 	{
-		$objDatabase = \Database::getInstance();
-		$objSession = \Session::getInstance();
+		$objDatabase = \Contao\Database::getInstance();
+		$objSession = \Contao\Session::getInstance();
 		
-		$this->Template = new \BackendTemplate('be_pct_tabletree');
+		$this->Template = new \Contao\BackendTemplate('be_pct_tabletree');
 		$this->Template->main = '';
 
 		// Ajax request
-		if ($_POST && \Environment::get('isAjaxRequest'))
+		if ($_POST && \Contao\Environment::get('isAjaxRequest'))
 		{
-			$this->objAjax = new \Ajax(\Input::post('action'));
+			$this->objAjax = new \Contao\Ajax(\Contao\Input::post('action'));
 			$this->objAjax->executePreActions();
 		}
 
-		$strTable = \Input::get('table');
-		$strField = \Input::get('field');
-		$strSource = \Input::get('source');
-		$strValueField = \Input::get('valueField') ?: 'id';
-		$strKeyField = \Input::get('keyField') ?: 'id';
-		$strOrderField = \Input::get('orderField') ?: 'id';
-		$strConditionsField = \Input::get('conditionsField') ?: '';
+		$strTable = \Contao\Input::get('table');
+		$strField = \Contao\Input::get('field');
+		$strSource = \Contao\Input::get('source');
+		$strValueField = \Contao\Input::get('valueField') ?: 'id';
+		$strKeyField = \Contao\Input::get('keyField') ?: 'id';
+		$strOrderField = \Contao\Input::get('orderField') ?: 'id';
+		$strConditionsField = \Contao\Input::get('conditionsField') ?: '';
 		
-		$strRootsField = \Input::get('rootsField');
-		$strTranslationField = \Input::get('translationField');
+		$strRootsField = \Contao\Input::get('rootsField');
+		$strTranslationField = \Contao\Input::get('translationField');
 		
 		// Define the current ID
-		define('CURRENT_ID', (\Input::get('table') ? \Session::getInstance()->get('CURRENT_ID') : \Input::get('id')));
+		define('CURRENT_ID', (\Contao\Input::get('table') ? \Contao\Session::getInstance()->get('CURRENT_ID') : \Contao\Input::get('id')));
 		
 		$this->loadDataContainer($strSource);
 		
@@ -95,12 +95,12 @@ class BackendPctTableTree extends Backend
 		$objDC->source = $strSource;
 		
 		// AJAX request
-		if ($_POST && \Environment::get('isAjaxRequest'))
+		if ($_POST && \Contao\Environment::get('isAjaxRequest'))
 		{
 		   $this->objAjax->executePostActions($objDC);
 		}
 		
-		$objSession->set('pctTableTreeRef', \Environment::get('request'));
+		$objSession->set('pctTableTreeRef', \Contao\Environment::get('request'));
 		
 		if(!is_array($GLOBALS['TL_DCA'][$strTable]))
 		{
@@ -111,7 +111,7 @@ class BackendPctTableTree extends Backend
 		$arrAttribs = $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval'];
 		$arrAttribs['id'] = $objDC->field;
 		$arrAttribs['name'] = $objDC->field;
-		$arrAttribs['value'] = array_filter(explode(',', \Input::get('value')));
+		$arrAttribs['value'] = array_filter(explode(',', \Contao\Input::get('value')));
 		$arrAttribs['strTable'] = $objDC->table;
 		$arrAttribs['strField'] = $strField;
 		$arrAttribs['activeRecord'] = $objDC->activeRecord;
@@ -139,14 +139,14 @@ class BackendPctTableTree extends Backend
 		
 		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDC);
 		$this->Template->main = $objWidget->generate();
-		$this->Template->theme = \Backend::getTheme();
-		$this->Template->base = \Environment::get('base');
+		$this->Template->theme = \Contao\Backend::getTheme();
+		$this->Template->base = \Contao\Environment::get('base');
 		$this->Template->language = $GLOBALS['TL_LANGUAGE'];
-		$this->Template->title = specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']);
+		$this->Template->title = \\specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']);
 		$this->Template->charset = $GLOBALS['TL_CONFIG']['characterSet'];
 		$this->Template->addSearch = true;
 		$this->Template->search = $GLOBALS['TL_LANG']['MSC']['search'];
-		$this->Template->action = ampersand(\Environment::get('request'));
+		$this->Template->action = \ampersand(\Contao\Environment::get('request'));
 		#$this->Template->manager = $GLOBALS['TL_LANG']['MSC']['pct_tableTreeManager'];
 		#$this->Template->managerHref = 'contao/main.php?do=pct_customelements_tags&amp;popup=1';
 		$this->Template->breadcrumb = $GLOBALS['TL_DCA'][$strSource]['list']['sorting']['breadcrumb'];
@@ -160,7 +160,7 @@ class BackendPctTableTree extends Backend
 		{
 			foreach($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel'] as $callback)
 			{
-				$arrPanels[] = \System::importStatic($callback[0])->{$callback[1]}($objDC,$this);
+				$arrPanels[] = \Contao\System::importStatic($callback[0])->{$callback[1]}($objDC,$this);
 			}
 		}
 		

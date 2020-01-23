@@ -136,7 +136,8 @@ Backend.openModalTabletreeSelector = function(options)
 			$$('#ctrl_'+opt.id)[0].value = val.join("\t");
 			var act = 'reloadTabletree';
 			new Request.Contao({
-				field: $$('#ctrl_'+opt.id)[0],
+				field: $$('#ctrl_' + opt.id)[0],
+				url: location.href,
 				evalScripts: false,
 				onRequest: AjaxRequest.displayBox(Contao.lang.loading + ' …'),
 				onSuccess: function(txt, json) {

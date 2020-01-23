@@ -142,7 +142,7 @@ class BackendPctTableTree extends Backend
 		$this->Template->theme = \Contao\Backend::getTheme();
 		$this->Template->base = \Contao\Environment::get('base');
 		$this->Template->language = $GLOBALS['TL_LANGUAGE'];
-		$this->Template->title = \\specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']);
+		$this->Template->title = \specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']);
 		$this->Template->charset = $GLOBALS['TL_CONFIG']['characterSet'];
 		$this->Template->addSearch = true;
 		$this->Template->search = $GLOBALS['TL_LANG']['MSC']['search'];

@@ -27,7 +27,7 @@ class TableTreeHelper extends \Contao\Backend
 	 * Backend ajax requests
 	 * @param string
 	 */
-	public function postActions($strAction, \DataContainer $objDC)
+	public function postActions($strAction, $objDC)
 	{
 		switch($strAction)
 		{

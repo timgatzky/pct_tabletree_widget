@@ -54,5 +54,5 @@ unset($_subfolder);
 /**
  * Instantiate the controller
  */
-$objPageTableTree = new BackendPctTableTree;
+$objPageTableTree = new \Contao\BackendPctTableTree;
 $objPageTableTree->run();

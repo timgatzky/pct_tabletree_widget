@@ -75,10 +75,7 @@ class TableTreeHelper extends \Contao\Backend
 					$strField = preg_replace('/(.*)_[0-9a-zA-Z]+$/', '$1', $strField);
 				}
 				
-				if(!$GLOBALS['TL_DCA'][$objDC->table])
-				{
-					$this->loadDataContainer($objDC->table);
-				}
+				$this->loadDataContainer($objDC->table);
 				
 				// The field does not exist
 				if (!isset($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]))

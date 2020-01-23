@@ -89,7 +89,7 @@ class BackendPctTableTree extends Backend
 		$objDC->translationField = $strTranslationField;
 		$objDC->rootsField = $strRootsField;
 		$objDC->conditionsField = $strConditionsField;
-		$objDC->conditions = $strConditions;
+		$objDC->conditions = \Contao\Input::get( $strConditionsField );
 		$objDC->field = $strField;
 		$objDC->table = $strTable;
 		$objDC->source = $strSource;

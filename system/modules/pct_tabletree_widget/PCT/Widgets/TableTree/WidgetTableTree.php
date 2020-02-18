@@ -24,7 +24,7 @@ namespace PCT\Widgets;
  * WidgetTableTree
  * Render the TableTree widget with its button
  */
-class WidgetTableTree extends \Widget
+class WidgetTableTree extends \Contao\Widget
 {
 
 	/**
@@ -90,7 +90,7 @@ class WidgetTableTree extends \Widget
 	{
 		$this->import('Database');
 		parent::__construct($arrAttributes);
-		$objSession = \Session::getInstance();
+		$objSession = \Contao\Session::getInstance();
 		
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
@@ -165,16 +165,16 @@ class WidgetTableTree extends \Widget
 		// Store the order value
 		if ($this->blnIsSortable)
 		{
-			$arrNew = \Input::post($this->strOrderSRC);
+			$arrNew = \Contao\Input::post($this->strOrderSRC);
 			// Only proceed if the value has changed
-			if ($arrNew !== deserialize($this->activeRecord->{$this->strOrderSRC}) && \Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable))
+			if ($arrNew !== \deserialize($this->activeRecord->{$this->strOrderSRC}) && \Contao\Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable))
 			{
 				if($this->blnIsMultiple)
 				{
 					$arrNew =  explode(',', $arrNew);
 				}
 				
-				\Database::getInstance()->prepare("UPDATE ".$this->strTable." %s WHERE id=?")->set( array('tstamp'=>time(),$this->strOrderSRC=>$arrNew) )->execute($this->activeRecord->id);
+				\Contao\Database::getInstance()->prepare("UPDATE ".$this->strTable." %s WHERE id=?")->set( array('tstamp'=>time(),$this->strOrderSRC=>$arrNew) )->execute($this->activeRecord->id);
 				$this->objDca->createNewVersion = true; // see #6285
 			}
 		}
@@ -220,7 +220,7 @@ class WidgetTableTree extends \Widget
 				$this->varValue = array($this->varValue);
 			}
 			
-			$objRows = \Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE ".($this->strConditions ? $this->strConditions ." AND " : " ")." ".\Database::getInstance()->findInSet($strKeyField,$this->varValue));
+			$objRows = \Contao\Database::getInstance()->execute("SELECT * FROM ".$this->strSource." WHERE ".($this->strConditions ? $this->strConditions ." AND " : " ")." ".\Contao\Database::getInstance()->findInSet($strKeyField,$this->varValue));
 			
 			if ($objRows->numRows > 0)
 			{
@@ -232,8 +232,8 @@ class WidgetTableTree extends \Widget
 					$strLabel = $objRows->$strValueField;
 					if(strlen($objRows->{$strTanslationField}) > 0)
 					{
-						$arrTranslations = deserialize($objRows->{$strTanslationField});
-						$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
+						$arrTranslations = \deserialize($objRows->{$strTanslationField});
+						$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
 						$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
 					}
 							
@@ -249,7 +249,7 @@ class WidgetTableTree extends \Widget
 				if(strlen($strOrderSRC) > 0)
 				{
 					$arrNew = array();
-					$varValues = deserialize($this->activeRecord->{$strOrderSRC});
+					$varValues = \deserialize($this->activeRecord->{$strOrderSRC});
 					if(!is_array($varValues))
 					{
 						$varValues = explode(',', $varValues);
@@ -288,7 +288,7 @@ class WidgetTableTree extends \Widget
 			}
 		}
 		
-		$intId = $this->activeRecord->id ?: \Input::get('id');
+		$intId = $this->activeRecord->id ?: \Contao\Input::get('id');
 	
 		$return = '<input type="hidden" name="'.$this->strName.'" id="ctrl_'.$this->strId.'" value="'.implode(',', $arrRawValues).'">' . ($this->blnIsSortable ? '
   <input type="hidden" name="'.$this->strOrderSRC.'" id="ctrl_'.$this->strOrderSRCId.'" value="'.$this->{$this->strOrderSRC}.'">' : '') . '
@@ -302,12 +302,12 @@ class WidgetTableTree extends \Widget
 		}
 		
 		$return .= '</ul>
-    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;roots='.$this->strRoots.'&amp;translationField='.$this->strTranslationField.'&amp;conditionsField='.$this->strConditionsField.'&roots='.$this->strRoots.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrRawValues).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'table\':\''.$this->strTable.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\',\'rootsField\':\''.$this->strRootField.'\',\'roots\':\''.$this->strRoots.'\',\'conditions\':\''.$this->strConditions.'\',\'conditionsField\':\''.$this->strConditionsField.'\'});return false;">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
+    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Contao\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;roots='.$this->strRoots.'&amp;translationField='.$this->strTranslationField.'&amp;conditionsField='.$this->strConditionsField.'&roots='.$this->strRoots.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrRawValues).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.\specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'table\':\''.$this->strTable.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\',\'rootsField\':\''.$this->strRootField.'\',\'roots\':\''.$this->strRoots.'\',\'conditions\':\''.$this->strConditions.'\',\'conditionsField\':\''.$this->strConditionsField.'\'});return false;">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
     ($this->blnIsSortable ? '<script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderSRCId.'")</script>' : '') . '
   
   </div>';
 
-		if (!\Environment::get('isAjaxRequest'))
+		if (!\Contao\Environment::get('isAjaxRequest'))
 		{
 			$return = '<div>' . $return . '</div>';
 		}

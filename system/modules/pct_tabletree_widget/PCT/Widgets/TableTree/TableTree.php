@@ -24,7 +24,7 @@ namespace PCT\Widgets;
  * TableTree
  * Render the TableTree list view
  */
-class TableTree extends \Widget
+class TableTree extends \Contao\Widget
 {
 	/**
 	 * Template
@@ -171,8 +171,8 @@ class TableTree extends \Widget
 			return '';
 		}
 		
-		$objSession = \Session::getInstance();
-		$objDatabase = \Database::getInstance();
+		$objSession = \Contao\Session::getInstance();
+		$objDatabase = \Contao\Database::getInstance();
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
 		$strTranslationField = $this->strTranslationField;
@@ -181,9 +181,9 @@ class TableTree extends \Widget
 		$this->loadDataContainer($this->strSource);
 
 		// Store the keyword
-		if (\Input::post('FORM_SUBMIT') == 'pct_tableTreeWidget' && \Input::post('keyword') != $objSession->get('pct_tabletree_selector_search'))
+		if (\Contao\Input::post('FORM_SUBMIT') == 'pct_tableTreeWidget' && \Contao\Input::post('keyword') != $objSession->get('pct_tabletree_selector_search'))
 		{
-			$objSession->set('pct_tabletree_selector_search', \Input::post('keyword'));
+			$objSession->set('pct_tabletree_selector_search', \Contao\Input::post('keyword'));
 			$this->reload();
 		}
 
@@ -321,7 +321,7 @@ class TableTree extends \Widget
 
 		// Return the tree
 		return '<ul class="tl_listing tree_view picker_selector'.(($this->strClass != '') ? ' ' . $this->strClass : '').'" id="'.$this->strId.'">
-    <li class="tl_folder_top"><div class="tl_left">'.\Image::getHtml($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['icon'] ?: 'pagemounts.gif').' '.($GLOBALS['TL_CONFIG']['websiteTitle'] ?: 'Contao Open Source CMS').'</div> <div class="tl_right">&nbsp;</div><div style="clear:both"></div></li><li class="parent" id="'.$this->strId.'_parent"><ul>'.$tree.$strReset.'
+    <li class="tl_folder_top"><div class="tl_left">'.\Contao\Image::getHtml($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['icon'] ?: 'pagemounts.gif').' '.($GLOBALS['TL_CONFIG']['websiteTitle'] ?: 'Contao Open Source CMS').'</div> <div class="tl_right">&nbsp;</div><div style="clear:both"></div></li><li class="parent" id="'.$this->strId.'_parent"><ul>'.$tree.$strReset.'
   </ul></li></ul>';
 	}
 
@@ -336,7 +336,7 @@ class TableTree extends \Widget
 	 */
 	public function generateAjax($id, $strField, $strValueField, $strKeyField, $level)
 	{
-		if(!\Environment::get('isAjaxRequest'))
+		if(!\Contao\Environment::get('isAjaxRequest'))
 		{
 			return '';
 		}
@@ -346,7 +346,7 @@ class TableTree extends \Widget
 		$this->strValueField = $strValueField ?: 'id';
 		$this->strKeyField = $strKeyField ?: 'id';
 		
-		$objDatabase = \Database::getInstance();
+		$objDatabase = \Contao\Database::getInstance();
 		$this->loadDataContainer($this->strSource);
 		$this->loadDataContainer($this->strTable);
 		
@@ -365,7 +365,7 @@ class TableTree extends \Widget
 		$objField = $objDatabase->prepare("SELECT ".$this->strValueField." FROM ".$this->strSource." WHERE id=?")->limit(1)->execute($this->strId);
 		if($objField->numRows > 0)
 		{
-		    $this->varValue = deserialize($objField->{$this->strValueField});
+		    $this->varValue = \deserialize($objField->{$this->strValueField});
 		}
 
 		$this->getNodes();
@@ -379,7 +379,7 @@ class TableTree extends \Widget
 		// Load the requested nodes
 		$tree = '';
 		$level = $level * 30;
-		$objRows = \Database::getInstance()->prepare("SELECT id,".$this->strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))->execute($id);
+		$objRows = \Contao\Database::getInstance()->prepare("SELECT id,".$this->strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))->execute($id);
 
 		while ($objRows->next())
 		{
@@ -402,8 +402,8 @@ class TableTree extends \Widget
 	protected function renderTree($id, $intMargin, $protectedRow=false, $blnNoRecursion=false)
 	{
 		static $session;
-		$objSession = \Session::getInstance();
-		$objDatabase = \Database::getInstance();
+		$objSession = \Contao\Session::getInstance();
+		$objDatabase = \Contao\Database::getInstance();
 		$session = $objSession->getData();
 		
 		$flag = substr($this->strField, 0, 2);
@@ -417,11 +417,11 @@ class TableTree extends \Widget
 		$strTanslationField = $this->strTranslationField;
 			
 		// Get the session data and toggle the nodes
-		if (\Input::get($flag.'tg'))
+		if (\Contao\Input::get($flag.'tg'))
 		{
-			$session[$node][\Input::get($flag.'tg')] = (isset($session[$node][\Input::get($flag.'tg')]) && $session[$node][\Input::get($flag.'tg')] == 1) ? 0 : 1;
+			$session[$node][\Contao\Input::get($flag.'tg')] = (isset($session[$node][\Contao\Input::get($flag.'tg')]) && $session[$node][\Contao\Input::get($flag.'tg')] == 1) ? 0 : 1;
 			$objSession->setData($session);
-			$this->redirect(preg_replace('/(&(amp;)?|\?)'.$flag.'tg=[^& ]*/i', '', \Environment::get('request')));
+			$this->redirect(preg_replace('/(&(amp;)?|\?)'.$flag.'tg=[^& ]*/i', '', \Contao\Environment::get('request')));
 		}
 
 		$objRow = $objDatabase->prepare("SELECT * FROM ".$this->strSource." WHERE ".$strKeyField."=?".($this->strConditions ? " AND ".$this->strConditions:""))->limit(1)->execute($id);
@@ -459,7 +459,7 @@ class TableTree extends \Widget
 			$folderAttribute = '';
 			$img = $blnIsOpen ? 'folMinus.gif' : 'folPlus.gif';
 			$alt = $blnIsOpen ? $GLOBALS['TL_LANG']['MSC']['collapseNode'] : $GLOBALS['TL_LANG']['MSC']['expandNode'];
-			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\',\''.$this->strValueField.'\',\''.$this->strKeyField.'\',\''.$this->strConditions.'\','.$level.')">'.\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
+			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.\specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\',\''.$this->strValueField.'\',\''.$this->strKeyField.'\',\''.$this->strConditions.'\','.$level.')">'.\Contao\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
 		}
 
 		// Set the protection status
@@ -476,33 +476,33 @@ class TableTree extends \Widget
 			$strLabel = $objRow->$strValueField;
 			if(strlen($objRow->{$strTanslationField}) > 0)
 			{
-				$arrTranslations = deserialize($objRow->{$strTanslationField});
-				$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
+				$arrTranslations = \deserialize($objRow->{$strTanslationField});
+				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
 				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
 			}
 			
 			// list_label_callback
 			if(is_array($label_callback) && !empty($label_callback))
 			{
-				$strLabel = \Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
+				$strLabel = \Contao\Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
 			}
 			
-			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
+			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.\specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
 		}
 		else
 		{
 			$strLabel = $objRow->$strValueField;
 			if(strlen($objRow->{$strTanslationField}) > 0)
 			{
-				$arrTranslations = deserialize($objRow->{$strTanslationField});
-				$lang = \Input::get('language') ?: \Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
+				$arrTranslations = \deserialize($objRow->{$strTanslationField});
+				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
 				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
 			}
 			
 			// list_label_callback
 			if(is_array($label_callback) && !empty($label_callback))
 			{
-				$strLabel = \Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
+				$strLabel = \Contao\Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
 			}
 			
 			$return .= $strLabel.'</div> <div class="tl_right">';
@@ -518,12 +518,12 @@ class TableTree extends \Widget
 		switch ($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['fieldType'])
 		{
 			case 'checkbox':
-				$return .= '<input type="checkbox" name="'.$this->strName.'[]" id="'.$this->strName.'_'.$id.'" class="tl_tree_checkbox" value="'.specialchars($id).'" onfocus="Backend.getScrollOffset()"'.static::optionChecked($id, $this->varValue).'>';
+				$return .= '<input type="checkbox" name="'.$this->strName.'[]" id="'.$this->strName.'_'.$id.'" class="tl_tree_checkbox" value="'.\specialchars($id).'" onfocus="Backend.getScrollOffset()"'.static::optionChecked($id, $this->varValue).'>';
 				break;
 
 			default:
 			case 'radio':
-				$return .= '<input type="radio" name="'.$this->strName.'" id="'.$this->strName.'_'.$id.'" class="tl_tree_radio" value="'.specialchars($id).'" onfocus="Backend.getScrollOffset()"'.static::optionChecked($id, $this->varValue).'>';
+				$return .= '<input type="radio" name="'.$this->strName.'" id="'.$this->strName.'_'.$id.'" class="tl_tree_radio" value="'.\specialchars($id).'" onfocus="Backend.getScrollOffset()"'.static::optionChecked($id, $this->varValue).'>';
 				break;
 		}
 
@@ -564,7 +564,7 @@ class TableTree extends \Widget
 
 		foreach ($this->varValue as $id)
 		{
-			$arrPids = \Database::getInstance()->getParentRecords($id, $this->strSource);
+			$arrPids = \Contao\Database::getInstance()->getParentRecords($id, $this->strSource);
 			array_shift($arrPids); // the first element is the ID of the page itself
 			$this->arrNodes = array_merge($this->arrNodes, $arrPids);
 		}

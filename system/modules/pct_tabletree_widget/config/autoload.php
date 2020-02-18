@@ -17,7 +17,7 @@ $path = 'system/modules/pct_tabletree_widget';
 /**
  * Register the namespaces
  */
-ClassLoader::addNamespaces(array
+\Contao\ClassLoader::addNamespaces(array
 (
 	'PCT',
 ));
@@ -26,7 +26,7 @@ ClassLoader::addNamespaces(array
 /**
  * Register the classes
  */
-ClassLoader::addClasses(array
+\Contao\ClassLoader::addClasses(array
 (
 	'PCT\Widgets\TableTree'										=> $path.'/PCT/Widgets/TableTree/TableTree.php',	
 	'PCT\Widgets\WidgetTableTree'								=> $path.'/PCT/Widgets/TableTree/WidgetTableTree.php',	
@@ -38,7 +38,7 @@ ClassLoader::addClasses(array
 /**
  * Register the templates
  */
-TemplateLoader::addFiles(array
+\Contao\TemplateLoader::addFiles(array
 (
 	// widgets
 	'be_pct_tabletree'     => 	$path.'/templates',

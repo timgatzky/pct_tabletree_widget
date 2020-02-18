@@ -33,7 +33,7 @@
   <?php else: ?>
 <!-- contao <= 4.4 -->
    <link rel="stylesheet" href="<?php
-    $objCombiner = new Combiner();
+    $objCombiner = new \Contao\Combiner();
     $objCombiner->add('system/themes/'. $this->theme .'/basic.css');
     $objCombiner->add('system/themes/'. $this->theme .'/main.css');
     $objCombiner->add(PCT_TABLETREE_PATH.'/assets/css/styles.css');
@@ -44,7 +44,7 @@
 
   <script><?php echo $this->getLocaleString(); ?></script>
   <script src="<?php
-    $objCombiner = new Combiner();
+    $objCombiner = new \Contao\Combiner();
     $objCombiner->add('assets/mootools/core/' . MOOTOOLS . '/mootools.js', MOOTOOLS);
     $objCombiner->add('assets/mootools/mootao/Mootao.js');
     $objCombiner->add('assets/contao/js/core.js');
@@ -61,7 +61,7 @@
     <div id="main">
     	<?php if ($this->managerHref): ?>
         <div id="manager">
-          <a href="<?php echo $this->managerHref; ?>" class="open" title="<?php echo specialchars($this->manager); ?>"><?php echo $this->manager; ?></a>
+          <a href="<?php echo $this->managerHref; ?>" class="open" title="<?php echo \specialchars($this->manager); ?>"><?php echo $this->manager; ?></a>
         </div>
       <?php endif; ?>
       

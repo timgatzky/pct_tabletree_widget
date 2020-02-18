@@ -1,3 +1,8 @@
+### 1.6.0
+Update: Rebuild on Contao namespace classes (#34)
+Update: Pass the current url to the ModalWindow to prevent issues under Contao 4.9 RC-1
+Update: Contao 4.9 compatibility
+
 ### 1.5.9
 Fixed: Tables with an unused pid field (like CC tables but not being actual child tables) did not show entries (#32) 
 

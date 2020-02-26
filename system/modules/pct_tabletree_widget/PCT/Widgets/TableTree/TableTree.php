@@ -290,7 +290,8 @@ class TableTree extends \Contao\Widget
 			{
 				// check if table contains a pid field
 				$hasPid = false;
-				if($objDatabase->fieldExists('pid',$this->strSource)  && in_array( (int)$GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['mode'], array(4,5) ) )
+				$hasRootNode = ($objDatabase->prepare("SELECT pid FROM ".$this->strSource." WHERE pid=0")->execute()->numRows > 0);
+				if($hasRootNode && $objDatabase->fieldExists('pid',$this->strSource)  && in_array( (int)$GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['mode'], array(4,5) ) )
 				{
 					$hasPid = true;
 				}

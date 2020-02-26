@@ -289,13 +289,19 @@ class TableTree extends \Contao\Widget
 			elseif ($this->User->isAdmin || empty($this->arrRootNodes))
 			{
 				// check if table contains a pid field
-				$hasPid = false;
-				if($objDatabase->fieldExists('pid',$this->strSource)  && in_array( (int)$GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['mode'], array(4,5) ) )
+				$hasPid = (boolean)$objDatabase->fieldExists('pid',$this->strSource);
+				$pid = '';
+				$mode = (int)$GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['mode'];
+				if($hasPid && in_array($mode, array(4)) )
 				{
-					$hasPid = true;
+					$pid = 'pid>=0';
+				}
+				else if( $hasPid && in_array($mode, array(5)) )
+				{
+					$pid = 'pid=0';
 				}
 				
-				$objRows = $objDatabase->prepare("SELECT ".$strKeyField." FROM ".$this->strSource." WHERE ".($hasPid == true ? " pid=? " : $strKeyField."!=''").($this->strConditions ? " AND ".$this->strConditions:"") . ($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute(0);
+				$objRows = $objDatabase->prepare("SELECT ".$strKeyField." FROM ".$this->strSource." WHERE ".(strlen($pid) > 0 ? $pid : $strKeyField."!=''").($this->strConditions ? " AND ".$this->strConditions:"") . ($this->strOrderField ? " ORDER BY ".$this->strOrderField : "") )->execute();
 				
 				while ($objRows->next())
 				{

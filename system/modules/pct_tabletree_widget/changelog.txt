@@ -1,5 +1,6 @@
 ### 1.6.1
 Update: Respect tables with non-root pid fields like [mode] 4 #37
+Update: Removed conditions in ajax reloads (#40)
 
 ### 1.6.0
 Update: Rebuild on Contao namespace classes (#34)

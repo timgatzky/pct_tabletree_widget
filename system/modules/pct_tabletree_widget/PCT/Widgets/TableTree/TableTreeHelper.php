@@ -46,7 +46,7 @@ class TableTreeHelper extends \Contao\Backend
 				$arrData['tabletree']['translationField'] = \Contao\Input::get('translationField');
 				$arrData['tabletree']['rootsField'] = \Contao\Input::get('rootsField');
 				$arrData['tabletree']['roots'] = \Contao\Input::get('roots');
-				$arrData['tabletree']['conditions'] = \Contao\Input::get('conditions');
+				#$arrData['tabletree']['conditions'] = \Contao\Input::get('conditions');
 				
 				$objWidget = new \PCT\Widgets\TableTree($arrData, $objDC);
 				echo $objWidget->generateAjax($this->strAjaxId, $objDC->field, $arrData['tabletree']['valueField'], $arrData['tabletree']['keyField'], intval(\Contao\Input::post('level')));
@@ -63,8 +63,8 @@ class TableTreeHelper extends \Contao\Backend
 				$strTranslationField = $objDC->translationField = \Contao\Input::post('translationField');
 				$strRootsField = $objDC->rootsField = \Contao\Input::post('rootsField');
 				$strRoots = $objDC->roots = \Contao\Input::post('roots');
-				$strConditionsField = $objDC->conditionsField = \Contao\Input::post('conditionsField');
-				$strConditions = $objDC->conditions = \Contao\Input::post('conditions');
+				#$strConditionsField = $objDC->conditionsField = \Contao\Input::post('conditionsField');
+				#$strConditions = $objDC->conditions = \Contao\Input::post('conditions');
 				
 				$objDatabase = \Contao\Database::getInstance();
 				
@@ -147,8 +147,8 @@ class TableTreeHelper extends \Contao\Backend
 				$arrAttribs['tabletree']['translationField'] = $strTranslationField;
 				$arrAttribs['tabletree']['rootsField'] = $strRootsField;
 				$arrAttribs['tabletree']['roots'] = $strRoots;
-				$arrAttribs['tabletree']['conditionsField'] = $strConditionsField;
-				$arrAttribs['tabletree']['conditions'] = $strConditions;
+				#$arrAttribs['tabletree']['conditionsField'] = $strConditionsField;
+				#$arrAttribs['tabletree']['conditions'] = $strConditions;
 				
 				$objWidget = new $GLOBALS['BE_FFL']['pct_tabletree']($arrAttribs);
 				echo $objWidget->generate();

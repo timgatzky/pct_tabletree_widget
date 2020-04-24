@@ -1,3 +1,6 @@
+### 1.6.3
+Update: Added an aditional logic to determine the initalize.php for servers like from Strato (#41)
+
 ### 1.6.2
 Update: Removed conditions in ajax reloads (#40)
 

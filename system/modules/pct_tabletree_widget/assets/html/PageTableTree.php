@@ -42,8 +42,14 @@ else if( file_exists( realpath($_SERVER['DOCUMENT_ROOT'].'/../') . '/system/init
 {
 	require_once realpath($_SERVER['DOCUMENT_ROOT'].'/../') . '/system/initialize.php';
 }
+// stratos logic
+else if( file_exists(__DIR__.'/'.str_repeat('../',count($_dirs)-1).'system/initialize.php') )
+{
+	require_once __DIR__.'/'.str_repeat('../',count($_dirs)-1).'system/initialize.php';
+}
 else
 {
+	var_dump('Contaos initialize.php not found');
 	throw new \Exception('Contaos initialize.php not found');
 }
 

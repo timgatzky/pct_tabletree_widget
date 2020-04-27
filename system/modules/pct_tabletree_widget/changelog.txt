@@ -1,3 +1,8 @@
+
+### 1.6.2
+Update: Removed conditions in ajax reloads (#40)
+Update: Support changed server-architecture (found on Strato) and print errors to screen when initialize.php has not been detected (#41)
+
 ### 1.6.1
 Update: Respect tables with non-root pid fields like [mode] 4 #37
 

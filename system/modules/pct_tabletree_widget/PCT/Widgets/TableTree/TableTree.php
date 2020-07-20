@@ -101,8 +101,8 @@ class TableTree extends \Contao\Widget
 		{
 			$arrAttributes = array_merge($arrAttributes, $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]);
 		}
-		
-		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true)
+
+		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true || (boolean)$GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['multiple'])
 		{
 			$this->blnIsMultiple = true;
 		}

@@ -1,3 +1,5 @@
+### 1.6.3
+Fixed: Check DCA array if field is multiple (#43)
 
 ### 1.6.2
 Update: Removed conditions in ajax reloads (#40)

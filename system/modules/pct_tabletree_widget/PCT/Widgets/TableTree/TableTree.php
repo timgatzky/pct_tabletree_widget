@@ -568,10 +568,17 @@ class TableTree extends \Contao\Widget
 			$this->varValue = array($this->varValue);
 		}
 
+		$objDatabase = \Contao\Database::getInstance();
+		$hasPid = (boolean)$objDatabase->fieldExists('pid',$this->strSource);
+
 		foreach ($this->varValue as $id)
 		{
-			$arrPids = \Contao\Database::getInstance()->getParentRecords($id, $this->strSource);
-			array_shift($arrPids); // the first element is the ID of the page itself
+			$arrPids = array(0);
+			if($hasPid)
+			{
+				$arrPids = $objDatabase->getParentRecords($id, $this->strSource);
+				array_shift($arrPids); // the first element is the ID of the page itself
+			}
 			$this->arrNodes = array_merge($this->arrNodes, $arrPids);
 		}
 	}

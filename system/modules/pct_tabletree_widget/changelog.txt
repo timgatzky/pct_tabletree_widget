@@ -1,3 +1,6 @@
+### 1.6.4
+Fixed: Check if source table has a pid field in TableTree->getNodes() methode
+
 ### 1.6.3
 Fixed: Check DCA array if field is multiple (#43)
 

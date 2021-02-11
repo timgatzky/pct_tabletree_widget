@@ -1,3 +1,6 @@
+### 1.6.5
+Fixed: Return value did not apply in load_callback in reloadTableTree action (#47)
+
 ### 1.6.4
 Fixed: Check if source table has a pid field in TableTree->getNodes() methode
 

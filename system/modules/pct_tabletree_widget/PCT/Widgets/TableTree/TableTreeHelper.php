@@ -122,7 +122,7 @@ class TableTreeHelper extends \Contao\Backend
 					{
 						if (is_array($callback))
 						{
-							\Contao\System::importStatic($callback[0])->{$callback[1]}($varValue, $objDC);
+							$varValue = \Contao\System::importStatic($callback[0])->{$callback[1]}($varValue, $objDC);
 						}
 						elseif (is_callable($callback))
 						{

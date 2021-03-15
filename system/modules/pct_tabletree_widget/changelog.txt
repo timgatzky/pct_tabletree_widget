@@ -1,3 +1,6 @@
+### 1.6.6
+Update: Support data-picker-value feature to merge values against preselected (#46)
+
 ### 1.6.5
 Fixed: Return value did not apply in load_callback in reloadTableTree action (#47)
 

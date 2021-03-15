@@ -324,9 +324,13 @@ class TableTree extends \Contao\Widget
 		{
 			$strReset = "\n" . '    <li class="tl_folder"><div class="tl_left">&nbsp;</div> <div class="tl_right"><label for="reset_' . $this->strId . '" class="tl_change_selected">' . $GLOBALS['TL_LANG']['MSC']['resetSelected'] . '</label> <input type="radio" name="' . $this->strName . '" id="reset_' . $this->strName . '" class="tl_tree_radio" value="" onfocus="Backend.getScrollOffset()"></div><div style="clear:both"></div></li>';
 		}
-
+		
+		$pickerValue = array_map('strval',$this->varValue);
+		$pickerValue = json_encode($pickerValue);
+		$pickerValue = htmlspecialchars($pickerValue);
+		
 		// Return the tree
-		return '<ul class="tl_listing tree_view picker_selector'.(($this->strClass != '') ? ' ' . $this->strClass : '').'" id="'.$this->strId.'">
+		return '<ul data-picker-value="'.$pickerValue.'" class="tl_listing tree_view picker_selector'.(($this->strClass != '') ? ' ' . $this->strClass : '').'" id="'.$this->strId.'">
     <li class="tl_folder_top"><div class="tl_left">'.\Contao\Image::getHtml($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['icon'] ?: 'pagemounts.gif').' '.($GLOBALS['TL_CONFIG']['websiteTitle'] ?: 'Contao Open Source CMS').'</div> <div class="tl_right">&nbsp;</div><div style="clear:both"></div></li><li class="parent" id="'.$this->strId.'_parent"><ul>'.$tree.$strReset.'
   </ul></li></ul>';
 	}

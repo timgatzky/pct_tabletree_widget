@@ -414,7 +414,7 @@ class TableTree extends \Contao\Widget
 		static $session;
 		$objSession = \Contao\System::getContainer()->get('session');
 		$objDatabase = \Contao\Database::getInstance();
-		$session = $objSession->getData();
+		$session = $objSession->all();
 		
 		$flag = substr($this->strField, 0, 2);
 		$node = 'tree_' . $this->strSource . '_' . $this->strField;
@@ -430,7 +430,7 @@ class TableTree extends \Contao\Widget
 		if (\Contao\Input::get($flag.'tg'))
 		{
 			$session[$node][\Contao\Input::get($flag.'tg')] = (isset($session[$node][\Contao\Input::get($flag.'tg')]) && $session[$node][\Contao\Input::get($flag.'tg')] == 1) ? 0 : 1;
-			$objSession->setData($session);
+			$objSession->replace($session);
 			$this->redirect(preg_replace('/(&(amp;)?|\?)'.$flag.'tg=[^& ]*/i', '', \Contao\Environment::get('request')));
 		}
 

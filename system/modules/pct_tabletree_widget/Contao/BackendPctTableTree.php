@@ -67,6 +67,7 @@ class BackendPctTableTree extends Backend
 
 		$strTable = \Contao\Input::get('table');
 		$strField = \Contao\Input::get('field');
+		$strName = \Contao\Input::get('name');
 		$strSource = \Contao\Input::get('source');
 		$strValueField = \Contao\Input::get('valueField') ?: 'id';
 		$strKeyField = \Contao\Input::get('keyField') ?: 'id';
@@ -107,13 +108,14 @@ class BackendPctTableTree extends Backend
 			$this->loadDataContainer($strTable);
 		}
 		
+		
 		// Build the attributes based on the "eval" array
 		$arrAttribs = $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval'];
 		$arrAttribs['id'] = $objDC->field;
 		$arrAttribs['name'] = $objDC->field;
 		$arrAttribs['value'] = array_filter(explode(',', \Contao\Input::get('value')));
 		$arrAttribs['strTable'] = $objDC->table;
-		$arrAttribs['strField'] = $strField;
+		$arrAttribs['strField'] = $strName;
 		$arrAttribs['activeRecord'] = $objDC->activeRecord;
 		$arrAttribs['tabletree']['source'] = $strSource;
 		$arrAttribs['tabletree']['valueField'] = $strValueField;

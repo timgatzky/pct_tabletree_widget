@@ -171,7 +171,7 @@ class TableTree extends \Contao\Widget
 			return '';
 		}
 		
-		$objSession = \Contao\Session::getInstance();
+		$objSession = \Contao\System::getContainer()->get('session');
 		$objDatabase = \Contao\Database::getInstance();
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
@@ -375,7 +375,7 @@ class TableTree extends \Contao\Widget
 		$objField = $objDatabase->prepare("SELECT ".$this->strValueField." FROM ".$this->strSource." WHERE id=?")->limit(1)->execute($this->strId);
 		if($objField->numRows > 0)
 		{
-		    $this->varValue = \deserialize($objField->{$this->strValueField});
+		    $this->varValue = \Contao\StringUtil::deserialize($objField->{$this->strValueField});
 		}
 
 		$this->getNodes();
@@ -412,7 +412,7 @@ class TableTree extends \Contao\Widget
 	protected function renderTree($id, $intMargin, $protectedRow=false, $blnNoRecursion=false)
 	{
 		static $session;
-		$objSession = \Contao\Session::getInstance();
+		$objSession = \Contao\System::getContainer()->get('session');
 		$objDatabase = \Contao\Database::getInstance();
 		$session = $objSession->getData();
 		
@@ -469,7 +469,7 @@ class TableTree extends \Contao\Widget
 			$folderAttribute = '';
 			$img = $blnIsOpen ? 'folMinus.gif' : 'folPlus.gif';
 			$alt = $blnIsOpen ? $GLOBALS['TL_LANG']['MSC']['collapseNode'] : $GLOBALS['TL_LANG']['MSC']['expandNode'];
-			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.\specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\',\''.$this->strValueField.'\',\''.$this->strKeyField.'\',\''.$this->strConditions.'\','.$level.')">'.\Contao\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
+			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.\Contao\StringUtil::specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\',\''.$this->strValueField.'\',\''.$this->strKeyField.'\',\''.$this->strConditions.'\','.$level.')">'.\Contao\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
 		}
 
 		// Set the protection status
@@ -486,7 +486,7 @@ class TableTree extends \Contao\Widget
 			$strLabel = $objRow->$strValueField;
 			if(strlen($objRow->{$strTanslationField}) > 0)
 			{
-				$arrTranslations = \deserialize($objRow->{$strTanslationField});
+				$arrTranslations = \Contao\StringUtil::deserialize($objRow->{$strTanslationField});
 				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
 				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
 			}
@@ -497,14 +497,14 @@ class TableTree extends \Contao\Widget
 				$strLabel = \Contao\Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
 			}
 			
-			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.\specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
+			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.\Contao\StringUtil::specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
 		}
 		else
 		{
 			$strLabel = $objRow->$strValueField;
 			if(strlen($objRow->{$strTanslationField}) > 0)
 			{
-				$arrTranslations = \deserialize($objRow->{$strTanslationField});
+				$arrTranslations = \Contao\StringUtil::deserialize($objRow->{$strTanslationField});
 				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
 				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
 			}
@@ -528,12 +528,12 @@ class TableTree extends \Contao\Widget
 		switch ($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['fieldType'])
 		{
 			case 'checkbox':
-				$return .= '<input type="checkbox" name="'.$this->strName.'[]" id="'.$this->strName.'_'.$id.'" class="tl_tree_checkbox" value="'.\specialchars($id).'" onfocus="Backend.getScrollOffset()"'.static::optionChecked($id, $this->varValue).'>';
+				$return .= '<input type="checkbox" name="'.$this->strName.'[]" id="'.$this->strName.'_'.$id.'" class="tl_tree_checkbox" value="'.\Contao\StringUtil::specialchars($id).'" onfocus="Backend.getScrollOffset()"'.static::optionChecked($id, $this->varValue).'>';
 				break;
 
 			default:
 			case 'radio':
-				$return .= '<input type="radio" name="'.$this->strName.'" id="'.$this->strName.'_'.$id.'" class="tl_tree_radio" value="'.\specialchars($id).'" onfocus="Backend.getScrollOffset()"'.static::optionChecked($id, $this->varValue).'>';
+				$return .= '<input type="radio" name="'.$this->strName.'" id="'.$this->strName.'_'.$id.'" class="tl_tree_radio" value="'.\Contao\StringUtil::specialchars($id).'" onfocus="Backend.getScrollOffset()"'.static::optionChecked($id, $this->varValue).'>';
 				break;
 		}
 

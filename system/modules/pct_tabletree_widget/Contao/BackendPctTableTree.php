@@ -53,7 +53,7 @@ class BackendPctTableTree extends Backend
 	public function run()
 	{
 		$objDatabase = \Contao\Database::getInstance();
-		$objSession = \Contao\Session::getInstance();
+		$objSession = \Contao\System::getContainer()->get('session');
 		
 		$this->Template = new \Contao\BackendTemplate('be_pct_tabletree');
 		$this->Template->main = '';
@@ -67,6 +67,7 @@ class BackendPctTableTree extends Backend
 
 		$strTable = \Contao\Input::get('table');
 		$strField = \Contao\Input::get('field');
+		$strName = \Contao\Input::get('name');
 		$strSource = \Contao\Input::get('source');
 		$strValueField = \Contao\Input::get('valueField') ?: 'id';
 		$strKeyField = \Contao\Input::get('keyField') ?: 'id';
@@ -77,7 +78,7 @@ class BackendPctTableTree extends Backend
 		$strTranslationField = \Contao\Input::get('translationField');
 		
 		// Define the current ID
-		define('CURRENT_ID', (\Contao\Input::get('table') ? \Contao\Session::getInstance()->get('CURRENT_ID') : \Contao\Input::get('id')));
+		define('CURRENT_ID', (\Contao\Input::get('table') ? $objSession->get('CURRENT_ID') : \Contao\Input::get('id')));
 		
 		$this->loadDataContainer($strSource);
 		
@@ -107,13 +108,14 @@ class BackendPctTableTree extends Backend
 			$this->loadDataContainer($strTable);
 		}
 		
+		
 		// Build the attributes based on the "eval" array
 		$arrAttribs = $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval'];
 		$arrAttribs['id'] = $objDC->field;
 		$arrAttribs['name'] = $objDC->field;
 		$arrAttribs['value'] = array_filter(explode(',', \Contao\Input::get('value')));
 		$arrAttribs['strTable'] = $objDC->table;
-		$arrAttribs['strField'] = $strField;
+		$arrAttribs['strField'] = $strName;
 		$arrAttribs['activeRecord'] = $objDC->activeRecord;
 		$arrAttribs['tabletree']['source'] = $strSource;
 		$arrAttribs['tabletree']['valueField'] = $strValueField;
@@ -142,7 +144,7 @@ class BackendPctTableTree extends Backend
 		$this->Template->theme = \Contao\Backend::getTheme();
 		$this->Template->base = \Contao\Environment::get('base');
 		$this->Template->language = $GLOBALS['TL_LANGUAGE'];
-		$this->Template->title = \specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']);
+		$this->Template->title = \Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']);
 		$this->Template->charset = $GLOBALS['TL_CONFIG']['characterSet'];
 		$this->Template->addSearch = true;
 		$this->Template->search = $GLOBALS['TL_LANG']['MSC']['search'];

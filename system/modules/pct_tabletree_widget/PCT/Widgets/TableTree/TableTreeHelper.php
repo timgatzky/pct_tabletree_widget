@@ -108,7 +108,7 @@ class TableTreeHelper extends \Contao\Backend
 				}
 				
 				// Set the new value
-				$varValue = trimsplit('\t',\Contao\Input::post('value',true));
+				$varValue = \Contao\StringUtil::trimsplit('\t',\Contao\Input::post('value',true));
 				
 				if(!is_array($varValue))
 				{
@@ -168,7 +168,7 @@ class TableTreeHelper extends \Contao\Backend
 		{
 			case 'toggleTabletree':
 			case 'loadTabletree':
-				$objSession = \Contao\Session::getInstance();
+				$objSession = \Contao\System::getContainer()->get('session');
 				$this->strAjaxId = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', \Contao\Input::post('id'));
 				$this->strAjaxKey = str_replace('_' . $this->strAjaxId, '', \Contao\Input::post('id'));
 				

@@ -90,7 +90,8 @@ class WidgetTableTree extends \Contao\Widget
 	{
 		$this->import('Database');
 		parent::__construct($arrAttributes);
-		$objSession = \Contao\Session::getInstance();
+		
+		$objSession = \Contao\System::getContainer()->get('session');
 		
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
@@ -167,7 +168,7 @@ class WidgetTableTree extends \Contao\Widget
 		{
 			$arrNew = \Contao\Input::post($this->strOrderSRC);
 			// Only proceed if the value has changed
-			if ($arrNew !== \deserialize($this->activeRecord->{$this->strOrderSRC}) && \Contao\Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable))
+			if ($arrNew !== \Contao\StringUtil::deserialize($this->activeRecord->{$this->strOrderSRC}) && \Contao\Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable))
 			{
 				if($this->blnIsMultiple)
 				{
@@ -232,7 +233,7 @@ class WidgetTableTree extends \Contao\Widget
 					$strLabel = $objRows->$strValueField;
 					if(strlen($objRows->{$strTanslationField}) > 0)
 					{
-						$arrTranslations = \deserialize($objRows->{$strTanslationField});
+						$arrTranslations = \Contao\StringUtil::deserialize($objRows->{$strTanslationField});
 						$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
 						$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
 					}
@@ -249,7 +250,7 @@ class WidgetTableTree extends \Contao\Widget
 				if(strlen($strOrderSRC) > 0)
 				{
 					$arrNew = array();
-					$varValues = \deserialize($this->activeRecord->{$strOrderSRC});
+					$varValues = \Contao\StringUtil::deserialize($this->activeRecord->{$strOrderSRC});
 					if(!is_array($varValues))
 					{
 						$varValues = explode(',', $varValues);
@@ -302,7 +303,7 @@ class WidgetTableTree extends \Contao\Widget
 		}
 		
 		$return .= '</ul>
-    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Contao\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strId.'&amp;name='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;roots='.$this->strRoots.'&amp;translationField='.$this->strTranslationField.'&amp;conditionsField='.$this->strConditionsField.'&roots='.$this->strRoots.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrRawValues).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.\specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'table\':\''.$this->strTable.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\',\'rootsField\':\''.$this->strRootField.'\',\'roots\':\''.$this->strRoots.'\',\'conditions\':\''.$this->strConditions.'\',\'conditionsField\':\''.$this->strConditionsField.'\'});return false;">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
+    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Contao\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strId.'&amp;name='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;roots='.$this->strRoots.'&amp;translationField='.$this->strTranslationField.'&amp;conditionsField='.$this->strConditionsField.'&roots='.$this->strRoots.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrRawValues).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.\Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'table\':\''.$this->strTable.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\',\'rootsField\':\''.$this->strRootField.'\',\'roots\':\''.$this->strRoots.'\',\'conditions\':\''.$this->strConditions.'\',\'conditionsField\':\''.$this->strConditionsField.'\'});return false;">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
     ($this->blnIsSortable ? '<script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderSRCId.'")</script>' : '') . '
   
   </div>';

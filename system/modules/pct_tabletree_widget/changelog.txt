@@ -1,3 +1,6 @@
+### 1.7.0
+New: Support for Contao 4.13
+
 ### 1.6.7
 Fixed: Multi-edit did not work (#50)
 Update: Replaced deprecated methods (#51)

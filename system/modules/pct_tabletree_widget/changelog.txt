@@ -1,3 +1,6 @@
+### 1.7.1
+Update: Set @ini_set('display_errors', '0'); in PageTableTree.php (#55)
+
 ### 1.7.0
 New: Support for Contao 4.13
 

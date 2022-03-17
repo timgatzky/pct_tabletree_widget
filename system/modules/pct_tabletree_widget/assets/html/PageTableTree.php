@@ -10,6 +10,9 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
+// do not display errors
+@ini_set('display_errors', '0');
+
 /**
  * Initialize the system
  */

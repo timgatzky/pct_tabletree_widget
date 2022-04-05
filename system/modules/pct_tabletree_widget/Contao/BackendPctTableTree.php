@@ -82,7 +82,7 @@ class BackendPctTableTree extends Backend
 		
 		$this->loadDataContainer($strSource);
 		
-		$strDriver = 'DC_' . ($GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] ? $GLOBALS['TL_DCA'][$strSource]['config']['dataContainer'] : 'Table');
+		$strDriver = DataContainer::getDriverForTable($strSource);
 		$objDC = new $strDriver($strSource);
 		$objDC->valueField = $strValueField;
 		$objDC->keyField = $strKeyField;

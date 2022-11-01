@@ -289,8 +289,12 @@ class WidgetTableTree extends \Contao\Widget
 			}
 		}
 		
-		$intId = $this->activeRecord->id ?: \Contao\Input::get('id');
-	
+		$intId = \Contao\Input::get('id');
+		if( isset($this->activeRecord->id) )
+		{
+			$this->activeRecord->id = 0;
+		}
+		
 		$return = '<input type="hidden" name="'.$this->strName.'" id="ctrl_'.$this->strId.'" value="'.implode(',', $arrRawValues).'">' . ($this->blnIsSortable ? '
   <input type="hidden" name="'.$this->strOrderSRC.'" id="ctrl_'.$this->strOrderSRCId.'" value="'.$this->{$this->strOrderSRC}.'">' : '') . '
   <div class="selector_container">' . (($this->blnIsSortable && count($arrValues) > 1) ? '

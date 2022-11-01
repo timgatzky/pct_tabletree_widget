@@ -101,8 +101,8 @@ class TableTree extends \Contao\Widget
 		{
 			$arrAttributes = array_merge($arrAttributes, $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]);
 		}
-
-		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true || (boolean)$GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['multiple'])
+		
+		if( (isset($arrAttributes['fieldType']) && $arrAttributes['fieldType'] == 'checkbox') || (isset($arrAttributes['multiple']) && $arrAttributes['multiple'] == true) || (isset($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['multiple']) && (boolean)$GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['multiple']) )
 		{
 			$this->blnIsMultiple = true;
 		}
@@ -112,13 +112,13 @@ class TableTree extends \Contao\Widget
 		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
 		$this->strOrderField = $arrAttributes['tabletree']['orderField'];
 		$this->strRootField = $arrAttributes['tabletree']['rootsField'];
-		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?: '';
-		$this->strConditions = $this->replaceInsertTags($arrAttributes['tabletree']['conditions'] ?: '');
+		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?? '';
+		$this->strConditions = $this->replaceInsertTags($arrAttributes['tabletree']['conditions'] ?? '');
 		
 		// load the data container of the source table e.g. for permission checks
 		$this->loadDataContainer($this->strSource);
 		
-		if(strlen($arrAttributes['tabletree']['translationField']) > 0)
+		if( isset($arrAttributes['tabletree']['translationField']) && strlen($arrAttributes['tabletree']['translationField']) > 0)
 		{
 			$this->strTranslationField = $arrAttributes['tabletree']['translationField'];
 		}
@@ -258,7 +258,7 @@ class TableTree extends \Contao\Widget
 			}
 			
 			// Root nodes (breadcrumb menu)
-			if (!empty($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root']))
+			if ( isset($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root']) && !empty($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root']))
 			{
 			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['root'], $this->strSource);
 			   foreach ($nodes as $node)
@@ -268,7 +268,7 @@ class TableTree extends \Contao\Widget
 			}
 			
 			// Predefined node set (see #3563)
-			elseif (is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField]))
+			elseif ( isset($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField]) && is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField]))
 			{
 			   $nodes = $this->eliminateNestedPages($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField], $this->strSource);
 			   foreach ($nodes as $node)
@@ -277,7 +277,7 @@ class TableTree extends \Contao\Widget
 			   }
 			}
 			// custom root nodes
-			elseif(count($this->arrRootNodes) > 0)
+			elseif( isset($this->arrRootNodes) && count($this->arrRootNodes) > 0)
 			{
 				$nodes = $this->eliminateNestedPages($this->arrRootNodes, $this->strSource);
 				foreach ($nodes as $node)
@@ -331,7 +331,7 @@ class TableTree extends \Contao\Widget
 		
 		// Return the tree
 		return '<ul data-picker-value="'.$pickerValue.'" class="tl_listing tree_view picker_selector'.(($this->strClass != '') ? ' ' . $this->strClass : '').'" id="'.$this->strId.'">
-    <li class="tl_folder_top"><div class="tl_left">'.\Contao\Image::getHtml($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['icon'] ?: 'pagemounts.gif').' '.($GLOBALS['TL_CONFIG']['websiteTitle'] ?: 'Contao Open Source CMS').'</div> <div class="tl_right">&nbsp;</div><div style="clear:both"></div></li><li class="parent" id="'.$this->strId.'_parent"><ul>'.$tree.$strReset.'
+    <li class="tl_folder_top"><div class="tl_left">'.\Contao\Image::getHtml($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['icon'] ?? 'pagemounts.gif').' '.($GLOBALS['TL_CONFIG']['websiteTitle'] ?? 'Contao Open Source CMS').'</div> <div class="tl_right">&nbsp;</div><div style="clear:both"></div></li><li class="parent" id="'.$this->strId.'_parent"><ul>'.$tree.$strReset.'
   </ul></li></ul>';
 	}
 
@@ -460,7 +460,7 @@ class TableTree extends \Contao\Widget
 		$return .= "\n    " . '<li class="tl_file toggle_select"><div class="tl_left" style="padding-left:'.($intMargin + $intSpacing).'px">';
 		
 		$folderAttribute = 'style="margin-left:20px"';
-		$session[$node][$id] = is_numeric($session[$node][$id]) ? $session[$node][$id] : 0;
+		$session[$node][$id] = $session[$node][$id] ?? 0;
 		$level = ($intMargin / $intSpacing + 1);
 		$blnIsOpen = ($session[$node][$id] == 1 || in_array($id, $this->arrNodes));
 
@@ -478,7 +478,7 @@ class TableTree extends \Contao\Widget
 		$metaWizardKey = (version_compare(VERSION,'3.2','<=') ? 'title': 'label');
 		
 		// label callback
-		$label_callback = $GLOBALS['PCT_TABLETREE_WIDGET'][$this->strSource]['label_callback'];	
+		$label_callback = $GLOBALS['PCT_TABLETREE_WIDGET'][$this->strSource]['label_callback'] ?? array();	
 		
 		// Add the current row
 		if (count($childs) > 0)
@@ -524,6 +524,10 @@ class TableTree extends \Contao\Widget
 			$GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['fieldType'] = 'checkbox';
 		}
 		
+		if( !isset($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['fieldType']) )
+		{
+			$GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['fieldType'] = 'radio';
+		}
 		// Add checkbox or radio button
 		switch ($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]['eval']['fieldType'])
 		{

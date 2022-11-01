@@ -103,7 +103,7 @@ class BackendPctTableTree extends Backend
 		
 		$objSession->set('pctTableTreeRef', \Contao\Environment::get('request'));
 		
-		if(!is_array($GLOBALS['TL_DCA'][$strTable]))
+		if( !isset($GLOBALS['TL_DCA'][$strTable]) || !is_array($GLOBALS['TL_DCA'][$strTable]))
 		{
 			$this->loadDataContainer($strTable);
 		}
@@ -151,7 +151,7 @@ class BackendPctTableTree extends Backend
 		$this->Template->action = \ampersand(\Contao\Environment::get('request'));
 		#$this->Template->manager = $GLOBALS['TL_LANG']['MSC']['pct_tableTreeManager'];
 		#$this->Template->managerHref = 'contao/main.php?do=pct_customelements_tags&amp;popup=1';
-		$this->Template->breadcrumb = $GLOBALS['TL_DCA'][$strSource]['list']['sorting']['breadcrumb'];
+		$this->Template->breadcrumb = $GLOBALS['TL_DCA'][$strSource]['list']['sorting']['breadcrumb'] ?? '';
 		$this->Template->request_token = '<input type="hidden" value="'.REQUEST_TOKEN.'" name="REQUEST_TOKEN">';
 		
 		$this->Template->value = $this->Session->get('pct_tabletree_selector_search');

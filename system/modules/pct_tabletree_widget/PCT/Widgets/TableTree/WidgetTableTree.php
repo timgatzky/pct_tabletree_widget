@@ -109,8 +109,8 @@ class WidgetTableTree extends \Contao\Widget
 		}
 		
 		$this->strSource = $arrAttributes['tabletree']['source'];
-		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'id';
-		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
+		$this->strValueField = $arrAttributes['tabletree']['valueField'] ?? 'id';
+		$this->strKeyField = $arrAttributes['tabletree']['keyField'] ?? 'id';
 		$this->strOrderField = $arrAttributes['tabletree']['orderField'] ?? '';
 		$this->strRootField = $arrAttributes['tabletree']['rootsField'] ?? '';
 		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?? '';

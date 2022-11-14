@@ -89,7 +89,7 @@ class TableTreeHelper extends \Contao\Backend
 				$varValue = null;
 				$multiple = false;
 			
-				if($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['eval']['fieldType'] == 'checkbox' || $GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['eval']['multiple'])
+				if( (isset($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['eval']['fieldType']) && $GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['eval']['fieldType'] == 'checkbox') || (isset($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['eval']['multiple']) && $GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['eval']['multiple']) )
 				{
 					$multiple = true;
 				}
@@ -116,7 +116,7 @@ class TableTreeHelper extends \Contao\Backend
 				}
 				
 				// Call the load_callback
-				if (is_array($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['load_callback']))
+				if ( isset($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['load_callback']) && is_array($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['load_callback']))
 				{
 					foreach ($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]['load_callback'] as $callback)
 					{

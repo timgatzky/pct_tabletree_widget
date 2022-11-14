@@ -1,3 +1,6 @@
+### 1.7.3
+Update: General PHP8 updates (#59)
+
 ### 1.7.2
 Fixed: Determine DataContainer class via DataContainer::getDriverForTable instead of DCA array (#57)
 

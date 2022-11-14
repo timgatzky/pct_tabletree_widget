@@ -96,33 +96,33 @@ class WidgetTableTree extends \Contao\Widget
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
 		
-		if($arrAttributes['fieldType'] == 'checkbox' || $arrAttributes['multiple'] == true || $arrAttributes['eval']['fieldType'] == 'checkbox' || $arrAttributes['eval']['multiple'] == true)
+		if( (isset($arrAttributes['fieldType']) && $arrAttributes['fieldType'] == 'checkbox') || (isset($arrAttributes['multiple']) && $arrAttributes['multiple'] == true) || (isset($arrAttributes['eval']['fieldType']) && $arrAttributes['eval']['fieldType'] == 'checkbox') || (isset($arrAttributes['eval']['multiple']) && $arrAttributes['eval']['multiple'] == true))
 		{
 			$this->blnIsMultiple = true;
 		}
 		
 		// get field defintion from datacontainer since contao does not pass custom evalulation arrays to widgets
-		if(!is_array($arrAttributes['tabletree']))
+		if( !isset($arrAttributes['tabletree']) || !is_array($arrAttributes['tabletree']))
 		{
 			$this->loadDataContainer($this->strTable);
 			$arrAttributes = array_merge($arrAttributes, $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField]);
 		}
 		
 		$this->strSource = $arrAttributes['tabletree']['source'];
-		$this->strValueField = strlen($arrAttributes['tabletree']['valueField']) > 0 ? $arrAttributes['tabletree']['valueField'] : 'id';
-		$this->strKeyField = strlen($arrAttributes['tabletree']['keyField']) > 0 ? $arrAttributes['tabletree']['keyField'] : 'id';
-		$this->strOrderField = $arrAttributes['tabletree']['orderField'];
-		$this->strRootField = $arrAttributes['tabletree']['rootsField'];
-		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?: '';
-		$this->strConditions = $arrAttributes['tabletree']['conditions'] ?: '';
+		$this->strValueField = $arrAttributes['tabletree']['valueField'] ?? 'id';
+		$this->strKeyField = $arrAttributes['tabletree']['keyField'] ?? 'id';
+		$this->strOrderField = $arrAttributes['tabletree']['orderField'] ?? '';
+		$this->strRootField = $arrAttributes['tabletree']['rootsField'] ?? '';
+		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?? '';
+		$this->strConditions = $arrAttributes['tabletree']['conditions'] ?? '';
 		
-		if(strlen($arrAttributes['tabletree']['translationField']) > 0)
+		if( isset($arrAttributes['tabletree']['translationField']) && strlen($arrAttributes['tabletree']['translationField']) > 0)
 		{
 			$this->strTranslationField = $arrAttributes['tabletree']['translationField'];
 		}
 		
 		// flag as sortable
-		if($arrAttributes['sortable'] || $arrAttributes['eval']['isSortable'] || $arrAttributes['eval']['sortable'])
+		if( (isset($arrAttributes['sortable']) && $arrAttributes['sortable']) || isset($arrAttributes['eval']['isSortable']) || (isset($arrAttributes['eval']['sortable']) && $arrAttributes['eval']['sortable']) )
 		{
 			$this->blnIsSortable = true;
 			$this->strOrderSRC = strlen($arrAttributes['eval']['orderField']) > 0 ? $arrAttributes['eval']['orderField']: 'orderSRC_'.$this->strName;
@@ -289,8 +289,12 @@ class WidgetTableTree extends \Contao\Widget
 			}
 		}
 		
-		$intId = $this->activeRecord->id ?: \Contao\Input::get('id');
-	
+		$intId = \Contao\Input::get('id');
+		if( isset($this->activeRecord->id) )
+		{
+			$this->activeRecord->id = 0;
+		}
+		
 		$return = '<input type="hidden" name="'.$this->strName.'" id="ctrl_'.$this->strId.'" value="'.implode(',', $arrRawValues).'">' . ($this->blnIsSortable ? '
   <input type="hidden" name="'.$this->strOrderSRC.'" id="ctrl_'.$this->strOrderSRCId.'" value="'.$this->{$this->strOrderSRC}.'">' : '') . '
   <div class="selector_container">' . (($this->blnIsSortable && count($arrValues) > 1) ? '

@@ -235,7 +235,7 @@ class WidgetTableTree extends \Contao\Widget
 					{
 						$arrTranslations = \Contao\StringUtil::deserialize($objRows->{$strTanslationField});
 						$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
-						$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
+						$strLabel = $arrTranslations[$lang]['label'] ?? $strLabel;
 					}
 							
 					$arrValues[$objRows->{$strKeyField}] = $strLabel . ' (' . $objRows->{$strKeyField} . ')';

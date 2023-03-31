@@ -1,4 +1,4 @@
-### 1.7.1
+### 1.7.4
 Update: General PHP8 updates (#61)
 
 ### 1.7.3

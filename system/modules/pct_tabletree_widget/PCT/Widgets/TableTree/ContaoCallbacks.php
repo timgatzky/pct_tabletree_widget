@@ -5,7 +5,7 @@
  * 
  * Copyright (C) 2005-2013 Leo Feyer
  * 
- * @copyright	Tim Gatzky 2014, Premium Contao Webworks, Premium Contao Themes
+ * @copyright	Tim Gatzky 2023, Premium Contao Webworks, Premium Contao Themes
  * @author		Tim Gatzky <info@tim-gatzky.de>
  * @package		pct_tabletree
  * @link		http://contao.org
@@ -17,12 +17,30 @@
  */
 namespace PCT\Widgets\TableTree;
 
+use Contao\Input;
+use Contao\StringUtil;
+use Contao\System;
+
 /**
  * Class file
- * TableTreeHelper
+ * ContaoCallbacks
  */
-class TableTreeHelper extends \Contao\Backend
+class ContaoCallbacks extends \Contao\Backend
 {
+	/**
+	 *  Add information to the backend main template
+	 * @param object
+	 * called from parseTemplate Hook
+	 */
+	public function parseTemplateCallback($objTemplate)
+	{
+		if($objTemplate->getName() == 'be_main' && (Input::get('key') == 'tabletree' || Input::get('do') == 'tabletree') )
+		{
+			$objTemplate->attributes .= ' data-page="tabletree"';
+		}
+	}
+	
+	
 	/**
 	 * Backend ajax requests
 	 * @param string
@@ -168,7 +186,7 @@ class TableTreeHelper extends \Contao\Backend
 		{
 			case 'toggleTabletree':
 			case 'loadTabletree':
-				$objSession = \Contao\System::getContainer()->get('session');
+				$objSession = \Contao\System::getContainer()->get('request_stack')->getSession();
 				$this->strAjaxId = preg_replace('/.*_([0-9a-zA-Z]+)$/', '$1', \Contao\Input::post('id'));
 				$this->strAjaxKey = str_replace('_' . $this->strAjaxId, '', \Contao\Input::post('id'));
 				

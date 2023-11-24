@@ -87,8 +87,11 @@ AjaxRequest.toggleTabletree = function (el, id, field, name, source, valueField,
 Backend.openModalTabletreeSelector = function(options) 
 {
 	var opt = options || {},
-		max = (window.getSize().y-180).toInt();
-	if (!opt.height || opt.height > max) opt.height = max;
+			maxWidth = (window.getSize().x - 20).toInt(),
+			maxHeight = (window.getSize().y - 192).toInt();
+		if (!opt.id) opt.id = 'tl_select';
+		if (!opt.width || opt.width > maxWidth) opt.width = Math.min(maxWidth, 900);
+		if (!opt.height || opt.height > maxHeight) opt.height = maxHeight;
 	
 	var M = new SimpleModal({
 		'width': opt.width,

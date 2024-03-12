@@ -97,7 +97,7 @@ class PageTableTree extends Backend
 		$objDC->source = $strSource;
 		
 		// AJAX request
-		if ($_POST && Environment::get('isAjaxRequest'))
+		if ($_POST && Environment::get('isAjaxRequest') && $objDC !== null)
 		{
 		   $this->objAjax->executePostActions($objDC);
 		}

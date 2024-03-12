@@ -170,16 +170,19 @@ class WidgetTableTree extends \Contao\Widget
 		if ($this->blnIsSortable)
 		{
 			$arrNew = \Contao\Input::post($this->strOrderSRC);
-			// Only proceed if the value has changed
-			if ($arrNew !== \Contao\StringUtil::deserialize($this->activeRecord->{$this->strOrderSRC}) && \Contao\Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable))
+			if( isset($this->activeRecord->{$this->strOrderSRC}) && \Contao\Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable) )
 			{
-				if($this->blnIsMultiple)
+				// Only proceed if the value has changed
+				if ($arrNew !== \Contao\StringUtil::deserialize($this->activeRecord->{$this->strOrderSRC}) )
 				{
-					$arrNew =  explode(',', $arrNew);
+					if($this->blnIsMultiple)
+					{
+						$arrNew =  explode(',', $arrNew);
+					}
+					
+					\Contao\Database::getInstance()->prepare("UPDATE ".$this->strTable." %s WHERE id=?")->set( array('tstamp'=>time(),$this->strOrderSRC=>$arrNew) )->execute($this->activeRecord->id);
+					$this->objDca->createNewVersion = true; // see #6285
 				}
-				
-				\Contao\Database::getInstance()->prepare("UPDATE ".$this->strTable." %s WHERE id=?")->set( array('tstamp'=>time(),$this->strOrderSRC=>$arrNew) )->execute($this->activeRecord->id);
-				$this->objDca->createNewVersion = true; // see #6285
 			}
 		}
 		

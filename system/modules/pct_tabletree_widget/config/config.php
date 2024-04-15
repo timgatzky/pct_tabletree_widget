@@ -33,10 +33,8 @@ if( version_compare(ContaoCoreBundle::getVersion(),'5.0','>=') )
 $GLOBALS['BE_FFL']['pct_tabletree'] = 'PCT\Widgets\WidgetTableTree';
 // Backend Controller
 $GLOBALS['BE_MOD']['content']['pct_customelements_tags']['tabletree'] = array('PCT\Widgets\TableTree\Backend\PageTableTree','run'); 
+$GLOBALS['BE_MOD']['design']['themes']['pct_customelements_tags']['tabletree'] = array('PCT\Widgets\TableTree\Backend\PageTableTree','run'); 
 
-#$GLOBALS['BE_MOD']['tabletree']['tabletree'] = array('PCT\Widgets\TableTree\Backend\PageTableTree','run'); 
-
-#http://dev50.tim-gatzky.de/contao?do=page&id=2&key=iconpicker&table=tl_page&field=fontIcon&value=
 /**
  * Hooks
  */

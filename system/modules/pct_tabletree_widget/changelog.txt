@@ -1,4 +1,4 @@
-### 1.8.0
+### 2.0.0
 Update: General Contao 5 compatibility (#63)
 Removed: Contao 4.9 compatibility (#63)
 

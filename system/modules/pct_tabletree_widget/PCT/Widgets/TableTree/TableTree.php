@@ -18,6 +18,9 @@
  */
 namespace PCT\Widgets;
 
+use Contao\BackendUser;
+use Contao\System;
+use Contao\Config;
 
 /**
  * Class file
@@ -87,7 +90,6 @@ class TableTree extends \Contao\Widget
 	 */
 	public function __construct($arrAttributes=null)
 	{
-		$this->import('Database');
 		parent::__construct($arrAttributes);
 		
 		// load the datacontainer of the origin table
@@ -113,8 +115,7 @@ class TableTree extends \Contao\Widget
 		$this->strOrderField = $arrAttributes['tabletree']['orderField'];
 		$this->strRootField = $arrAttributes['tabletree']['rootsField'];
 		$this->strConditionsField = $arrAttributes['tabletree']['conditionsField'] ?? '';
-		$this->strConditions = $this->replaceInsertTags($arrAttributes['tabletree']['conditions'] ?? '');
-		
+		$this->strConditions = System::getContainer()->get('contao.insert_tag.parser')->replace($arrAttributes['tabletree']['conditions'] ?? ''); 
 		// load the data container of the source table e.g. for permission checks
 		$this->loadDataContainer($this->strSource);
 		
@@ -166,18 +167,18 @@ class TableTree extends \Contao\Widget
 	 */
 	public function generate()
 	{
-		if(!$this->strSource)
+		if( empty($this->strSource) )
 		{
 			return '';
 		}
 		
-		$objSession = \Contao\System::getContainer()->get('session');
+		$objSession = System::getContainer()->get('request_stack')->getSession();
 		$objDatabase = \Contao\Database::getInstance();
 		$strKeyField = $this->strKeyField;
 		$strValueField = $this->strValueField;
 		$strTranslationField = $this->strTranslationField;
 		
-		$this->import('BackendUser', 'User');
+		System::import(BackendUser::class, 'User');	
 		$this->loadDataContainer($this->strSource);
 
 		// Store the keyword
@@ -191,7 +192,7 @@ class TableTree extends \Contao\Widget
 		$this->getNodes();
 		$for = $objSession->get('pct_tabletree_selector_search');
 		$arrIds = array();
-
+		
 		// Search for a specific value
 		if ($for != '')
 		{
@@ -205,7 +206,7 @@ class TableTree extends \Contao\Widget
 			if ($objRoot->numRows > 0)
 			{
 				// Respect existing limitations
-				if (is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField]))
+				if ( isset($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField]) && is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField]))
 				{
 					$arrRoot = array();
 
@@ -253,7 +254,7 @@ class TableTree extends \Contao\Widget
 			{
 				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField], $this->strSource)))
 				{
-					$this->Session->remove('tabletree_node');
+					$objSession->remove('tabletree_node');
 				}
 			}
 			
@@ -412,7 +413,7 @@ class TableTree extends \Contao\Widget
 	protected function renderTree($id, $intMargin, $protectedRow=false, $blnNoRecursion=false)
 	{
 		static $session;
-		$objSession = \Contao\System::getContainer()->get('session');
+		$objSession = System::getContainer()->get('request_stack')->getSession();
 		$objDatabase = \Contao\Database::getInstance();
 		$session = $objSession->all();
 		
@@ -475,8 +476,6 @@ class TableTree extends \Contao\Widget
 		// Set the protection status
 		$objRow->protected = ($objRow->protected || $protectedRow);
 
-		$metaWizardKey = (version_compare(VERSION,'3.2','<=') ? 'title': 'label');
-		
 		// label callback
 		$label_callback = $GLOBALS['PCT_TABLETREE_WIDGET'][$this->strSource]['label_callback'] ?? array();	
 		
@@ -488,7 +487,7 @@ class TableTree extends \Contao\Widget
 			{
 				$arrTranslations = \Contao\StringUtil::deserialize($objRow->{$strTanslationField});
 				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
-				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
+				$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
 			}
 			
 			// list_label_callback
@@ -497,7 +496,7 @@ class TableTree extends \Contao\Widget
 				$strLabel = \Contao\Controller::importStatic($label_callback[0])->{$label_callback[1]}($objRow->row(),$strLabel);
 			}
 			
-			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.\Contao\StringUtil::specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . $GLOBALS['TL_CONFIG']['urlSuffix'] . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
+			$return .= '<a href="' . $this->addToUrl('node='.$objRow->{$strKeyField}) . '" title="'.\Contao\StringUtil::specialchars($objRow->$strValueField . ' (' . $objRow->$strKeyField . Config::get('urlSuffix') . ')').'">'.$strLabel.'</a></div> <div class="tl_right">';
 		}
 		else
 		{
@@ -506,7 +505,7 @@ class TableTree extends \Contao\Widget
 			{
 				$arrTranslations = \Contao\StringUtil::deserialize($objRow->{$strTanslationField});
 				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
-				$strLabel = $arrTranslations[$lang][$metaWizardKey] ?: $strLabel;
+				$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
 			}
 			
 			// list_label_callback
@@ -544,7 +543,7 @@ class TableTree extends \Contao\Widget
 		$return .= '</div><div style="clear:both"></div></li>';
 
 		// Begin a new submenu
-		if (!empty($childs) && is_array($childs) && ($blnIsOpen || $this->Session->get('pct_tabletree_selector_search') != ''))
+		if (!empty($childs) && is_array($childs) && ($blnIsOpen || $objSession->get('pct_tabletree_selector_search') != ''))
 		{
 			$return .= '<li class="parent" id="'.$node.'_'.$id.'"><ul class="level_'.$level.'">';
 

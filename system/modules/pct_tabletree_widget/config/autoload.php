@@ -12,27 +12,25 @@
  * @license     LGPL
  */
 
-$path = 'system/modules/pct_tabletree_widget';
-
-/**
- * Register the namespaces
- */
-\Contao\ClassLoader::addNamespaces(array
-(
-	'PCT',
-));
-
+// path relative from composer directory
+$path = \Contao\System::getContainer()->getParameter('kernel.project_dir').'/vendor/composer/../../system/modules/pct_tabletree_widget';
 
 /**
  * Register the classes
  */
-\Contao\ClassLoader::addClasses(array
+$classMap = array
 (
 	'PCT\Widgets\TableTree'										=> $path.'/PCT/Widgets/TableTree/TableTree.php',	
 	'PCT\Widgets\WidgetTableTree'								=> $path.'/PCT/Widgets/TableTree/WidgetTableTree.php',	
 	'PCT\Widgets\TableTree\TableTreeHelper'						=> $path.'/PCT/Widgets/TableTree/TableTreeHelper.php',
-	'Contao\BackendPctTableTree'								=> $path.'/Contao/BackendPctTableTree.php',
-));
+	'PCT\Widgets\TableTree\ContaoCallbacks'						=> $path.'/PCT/Widgets/TableTree/ContaoCallbacks.php',
+	'PCT\Widgets\TableTree\Backend\PageTableTree'				=> $path.'/PCT/Widgets/TableTree/Backend/PageTableTree.php',
+#	'Contao\BackendPctTableTree'								=> $path.'/Contao/BackendPctTableTree.php',
+);
+
+$loader = new \Composer\Autoload\ClassLoader();
+$loader->addClassMap($classMap);
+$loader->register();
 
 
 /**
@@ -41,5 +39,5 @@ $path = 'system/modules/pct_tabletree_widget';
 \Contao\TemplateLoader::addFiles(array
 (
 	// widgets
-	'be_pct_tabletree'     => 	$path.'/templates',
+	'be_pct_tabletree'     => 	'system/modules/pct_tabletree_widget/templates',
 ));

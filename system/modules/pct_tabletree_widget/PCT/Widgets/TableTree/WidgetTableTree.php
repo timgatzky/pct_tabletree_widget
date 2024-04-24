@@ -18,6 +18,10 @@
  */
 namespace PCT\Widgets;
 
+use Contao\StringUtil;
+use Contao\Controller;
+use Contao\Input;
+use Contao\System;
 
 /**
  * Class file
@@ -88,10 +92,9 @@ class WidgetTableTree extends \Contao\Widget
 	 */
 	public function __construct($arrAttributes=null)
 	{
-		$this->import('Database');
 		parent::__construct($arrAttributes);
 		
-		$objSession = \Contao\System::getContainer()->get('session');
+		$objSession = \Contao\System::getContainer()->get('request_stack')->getSession();
 		
 		// load js
 		$GLOBALS['TL_JAVASCRIPT'][] = PCT_TABLETREE_PATH.'/assets/js/tabletree.js';
@@ -167,16 +170,19 @@ class WidgetTableTree extends \Contao\Widget
 		if ($this->blnIsSortable)
 		{
 			$arrNew = \Contao\Input::post($this->strOrderSRC);
-			// Only proceed if the value has changed
-			if ($arrNew !== \Contao\StringUtil::deserialize($this->activeRecord->{$this->strOrderSRC}) && \Contao\Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable))
+			if( isset($this->activeRecord->{$this->strOrderSRC}) && \Contao\Database::getInstance()->fieldExists($this->strOrderSRC,$this->strTable) )
 			{
-				if($this->blnIsMultiple)
+				// Only proceed if the value has changed
+				if ($arrNew !== \Contao\StringUtil::deserialize($this->activeRecord->{$this->strOrderSRC}) )
 				{
-					$arrNew =  explode(',', $arrNew);
+					if($this->blnIsMultiple)
+					{
+						$arrNew =  explode(',', $arrNew);
+					}
+					
+					\Contao\Database::getInstance()->prepare("UPDATE ".$this->strTable." %s WHERE id=?")->set( array('tstamp'=>time(),$this->strOrderSRC=>$arrNew) )->execute($this->activeRecord->id);
+					$this->objDca->createNewVersion = true; // see #6285
 				}
-				
-				\Contao\Database::getInstance()->prepare("UPDATE ".$this->strTable." %s WHERE id=?")->set( array('tstamp'=>time(),$this->strOrderSRC=>$arrNew) )->execute($this->activeRecord->id);
-				$this->objDca->createNewVersion = true; // see #6285
 			}
 		}
 		
@@ -293,6 +299,8 @@ class WidgetTableTree extends \Contao\Widget
 			}
 		}
 		
+		$strToken = \Contao\System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue();
+
 		$intId = \Contao\Input::get('id');
 		if( isset($this->activeRecord->id) )
 		{
@@ -309,12 +317,56 @@ class WidgetTableTree extends \Contao\Widget
 		{
 			$return .= '<li data-id="'.$k.'">'.$v.'</li>';
 		}
+		#Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.\Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'table\':\''.$this->strTable.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\'
+		#,\'translationField\':\''.$this->strTranslationField.'\',\'rootsField\':\''.$this->strRootField.'\',\'roots\':\''.$this->strRoots.'\'
+		#,\'conditions\':\''.$this->strConditions.'\',\'conditionsField\':\''.$this->strConditionsField.'\'})
+		$inputName = $this->strField;
+		$params = array
+		(
+			'key' => 'tabletree',
+			'do' => 'pct_customelements_tags',
+			'table' => $this->strTable,
+			'field' => $this->strId,
+			'name' => $this->strField,
+			'source' => $this->strSource,
+			'valueField' => $this->strValueField,
+			'keyField' => $this->strKeyField,
+			'orderField' => $this->strOrderField,
+			'rootsField'=> $this->strRootField,
+			'roots' => $this->strRoots,
+			'translationField' => $this->strTranslationField,
+			'conditionsField' => $this->strConditionsField
+		);
+		$href = Controller::addToUrl( \http_build_query($params),true,array('act') );
+		$link = $GLOBALS['TL_LANG']['MSC']['changeSelection'];
 		
-		$return .= '</ul>
-    <p><a href="'.PCT_TABLETREE_PATH.'/assets/html/PageTableTree.php?do='.\Contao\Input::get('do').'&amp;table='.$this->strTable.'&amp;field='.$this->strId.'&amp;name='.$this->strField.'&amp;source='.$this->strSource.'&amp;valueField='.$this->strValueField.'&amp;keyField='.$this->strKeyField.'&amp;orderField='.$this->strOrderField.'&amp;rootsField='.$this->strRootField.'&amp;roots='.$this->strRoots.'&amp;translationField='.$this->strTranslationField.'&amp;conditionsField='.$this->strConditionsField.'&roots='.$this->strRoots.'&amp;act=show&amp;id='.$intId.'&amp;value='.implode(',', $arrRawValues).'&amp;rt='.REQUEST_TOKEN.'" class="tl_submit" onclick="Backend.getScrollOffset();Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.\Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'table\':\''.$this->strTable.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\',\'translationField\':\''.$this->strTranslationField.'\',\'rootsField\':\''.$this->strRootField.'\',\'roots\':\''.$this->strRoots.'\',\'conditions\':\''.$this->strConditions.'\',\'conditionsField\':\''.$this->strConditionsField.'\'});return false;">'.$GLOBALS['TL_LANG']['MSC']['changeSelection'].'</a></p>' . 
-    ($this->blnIsSortable ? '<script>Backend.makeMultiSrcSortable("sort_'.$this->strId.'", "ctrl_'.$this->strOrderSRCId.'")</script>' : '') . '
-  
-  </div>';
+		$return .= '</ul>';
+		$return .= '<p><a class="tl_submit" href="' . StringUtil::ampersand($href) . '" title="' . StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']) . '" id="pp_' . $inputName . '">' . $link . '</a><p>
+		<script>
+			$("pp_' . $inputName . '").addEvent("click", function(e) {
+			e.preventDefault();
+			Backend.openModalTabletreeSelector({
+				"id": "'.$this->strField.'",
+				"title": ' .json_encode($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']) . ',
+				"url": this.href + "&value=" + document.getElementById("ctrl_' . $inputName . '").value,
+				"source":"'.$this->strSource.'",
+				"table":"'.$this->strTable.'",
+				"valueField":"'.$this->strValueField.'",
+				"keyField":"'.$this->strKeyField.'",
+				"translationField":"'.$this->strTranslationField.'",
+				"rootsField":"'.$this->strRootField.'",
+				"roots":"'.$this->strRoots.'",
+				"conditions":"'.$this->strConditions.'",
+				"conditionsField":"'.$this->strConditionsField.'",
+				"callback": function(picker, value) 
+				{
+					$("ctrl_' . $inputName . '").value = value.join(",");
+					$("ctrl_' . $inputName . '").fireEvent("change");
+				}.bind(this)
+			});
+			});
+		</script>';
+		$return .= '</div>';
 
 		if (!\Contao\Environment::get('isAjaxRequest'))
 		{

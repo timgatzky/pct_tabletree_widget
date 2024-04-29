@@ -492,7 +492,10 @@ class TableTree extends \Contao\Widget
 			{
 				$arrTranslations = \Contao\StringUtil::deserialize($objRow->{$strTanslationField});
 				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
-				$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
+				if( isset( $arrTranslations[$lang]['label'] ) && !empty( $arrTranslations[$lang]['label'] ) )
+				{
+					$strLabel = $arrTranslations[$lang]['label'];
+				}
 			}
 			
 			// list_label_callback
@@ -510,7 +513,10 @@ class TableTree extends \Contao\Widget
 			{
 				$arrTranslations = \Contao\StringUtil::deserialize($objRow->{$strTanslationField});
 				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
-				$strLabel = $arrTranslations[$lang]['label'] ?? $strLabel;
+				if( isset( $arrTranslations[$lang]['label'] ) && !empty( $arrTranslations[$lang]['label'] ) )
+				{
+					$strLabel = $arrTranslations[$lang]['label'];
+				}
 			}
 			
 			// list_label_callback

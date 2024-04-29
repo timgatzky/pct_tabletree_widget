@@ -92,6 +92,11 @@ class TableTree extends \Contao\Widget
 	{
 		parent::__construct($arrAttributes);
 		
+		if( !isset($this->Database) || $this->Database === null )
+		{
+			$this->Database = \Contao\Database::getInstance();
+		}
+
 		// load the datacontainer of the origin table
 		$this->loadDataContainer($this->strTable);
 			
@@ -171,7 +176,7 @@ class TableTree extends \Contao\Widget
 		{
 			return '';
 		}
-		
+
 		$objSession = System::getContainer()->get('request_stack')->getSession();
 		$objDatabase = \Contao\Database::getInstance();
 		$strKeyField = $this->strKeyField;
@@ -505,7 +510,7 @@ class TableTree extends \Contao\Widget
 			{
 				$arrTranslations = \Contao\StringUtil::deserialize($objRow->{$strTanslationField});
 				$lang = \Contao\Input::get('language') ?: \Contao\Input::get('lang') ?: $GLOBALS['TL_LANGUAGE'];
-				$strLabel = $arrTranslations[$lang]['label'] ?: $strLabel;
+				$strLabel = $arrTranslations[$lang]['label'] ?? $strLabel;
 			}
 			
 			// list_label_callback

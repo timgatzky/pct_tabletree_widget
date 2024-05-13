@@ -19,7 +19,7 @@ use Contao\System;
  * Constants
  */
 define('PCT_TABLETREE_PATH', 'system/modules/pct_tabletree_widget');
-define('PCT_TABLETREE_VERSION', '2.0.1');
+define('PCT_TABLETREE_VERSION', '2.0.2');
 
 if( version_compare(ContaoCoreBundle::getVersion(),'5.0','>=') )
 {

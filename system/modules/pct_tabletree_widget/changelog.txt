@@ -1,3 +1,6 @@
+### 2.0.2
+Fixed: Changed deprecated log entries (#69)
+
 ### 2.0.1
 Fixed: Contao 4.13: Call to a member function getChildRecords() on null because eleminateNestedPages does not instantiate the database class (#65)
 Update: General PHP8 updates (#67)

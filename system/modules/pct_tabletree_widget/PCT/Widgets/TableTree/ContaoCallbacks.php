@@ -18,8 +18,6 @@
 namespace PCT\Widgets\TableTree;
 
 use Contao\Input;
-use Contao\StringUtil;
-use Contao\System;
 
 /**
  * Class file
@@ -27,6 +25,11 @@ use Contao\System;
  */
 class ContaoCallbacks extends \Contao\Backend
 {
+	protected $strAjaxKey = '';
+	protected $strAjaxId = 0;
+	protected $strAjaxName = '';
+
+
 	/**
 	 *  Add information to the backend main template
 	 * @param object
@@ -98,7 +101,7 @@ class ContaoCallbacks extends \Contao\Backend
 				// The field does not exist
 				if (!isset($GLOBALS['TL_DCA'][$objDC->table]['fields'][$strField]))
 				{
-					$this->log('Field "' . $strField . '" does not exist in DCA "' . $objDC->table . '"', __METHOD__, TL_ERROR);
+					\Contao\System::getContainer()->get('monolog.logger.contao.error')->info('Field "' . $strField . '" does not exist in DCA "' . $objDC->table . '"');
 					header('HTTP/1.1 400 Bad Request');
 					die('Bad Request');
 				}
@@ -118,7 +121,7 @@ class ContaoCallbacks extends \Contao\Backend
 					$objActiveRecord = $objDatabase->prepare("SELECT * FROM " . $objDC->table . " WHERE id=?")->execute($intDcaId);
 					if($objActiveRecord->numRows <  1)
 					{
-						$this->log('A record with the ID "' . $intId . '" does not exist in table "' . $strSource . '"', __METHOD__, TL_ERROR);
+						\Contao\System::getContainer()->get('monolog.logger.contao.error')->info('A record with the ID "' . $intId . '" does not exist in table "' . $strSource . '"');
 						header('HTTP/1.1 400 Bad Request');
 						die('Bad Request');
 					}

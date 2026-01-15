@@ -366,6 +366,12 @@ class WidgetTableTree extends \Contao\Widget
 			});
 			});
 		</script>';
+		
+		if( $this->blnIsSortable )
+		{
+			$return .= '<script>Backend.makeMultiSrcSortable("sort_' . $inputName . '", "ctrl_' . $inputName . '", "ctrl_' . $inputName . '")</script>';
+		}
+		
 		$return .= '</div>';
 
 		if (!\Contao\Environment::get('isAjaxRequest'))

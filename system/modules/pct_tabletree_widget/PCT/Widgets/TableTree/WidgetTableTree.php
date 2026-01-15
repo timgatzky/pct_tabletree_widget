@@ -257,7 +257,7 @@ class WidgetTableTree extends \Contao\Widget
 			{	
 				// Apply a custom sort by real dca order field like orderSRC
 					
-				if(strlen($strOrderSRC) > 0)
+				if(strlen($strOrderSRC) > 0 && isset( $this->activeRecord->{$strOrderSRC} ))
 				{
 					$arrNew = array();
 					$varValues = \Contao\StringUtil::deserialize($this->activeRecord->{$strOrderSRC});
@@ -366,6 +366,12 @@ class WidgetTableTree extends \Contao\Widget
 			});
 			});
 		</script>';
+		
+		if( $this->blnIsSortable )
+		{
+			$return .= '<script>Backend.makeMultiSrcSortable("sort_' . $inputName . '", "ctrl_' . $inputName . '", "ctrl_' . $inputName . '")</script>';
+		}
+		
 		$return .= '</div>';
 
 		if (!\Contao\Environment::get('isAjaxRequest'))

@@ -1,3 +1,6 @@
+### 2.1.0
+Update: Updates related to Contao 5.7 and furture Contao 6 (#74)
+
 ### 2.0.3
 Fixed: Drag & Drop did not work in sortable widgets (#71)
 Update: Minor PHP8 update (#72)

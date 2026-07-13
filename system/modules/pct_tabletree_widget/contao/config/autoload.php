@@ -13,7 +13,7 @@
  */
 
 // path relative from composer directory
-$path = \Contao\System::getContainer()->getParameter('kernel.project_dir').'/vendor/composer/../../system/modules/pct_tabletree_widget';
+$path = \Contao\System::getContainer()->getParameter('kernel.project_dir').'/system/modules/pct_tabletree_widget';
 
 /**
  * Register the classes

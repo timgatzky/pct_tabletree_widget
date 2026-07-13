@@ -24,7 +24,7 @@ define('PCT_TABLETREE_VERSION', '2.1.0');
 if( version_compare(ContaoCoreBundle::getVersion(),'5.0','>=') )
 {
 	$rootDir = System::getContainer()->getParameter('kernel.project_dir');
-	include( $rootDir.'/system/modules/pct_tabletree_widget/config/autoload.php' );
+	include( $rootDir.'/system/modules/pct_tabletree_widget/contao/config/autoload.php' );
 }
 
 /**

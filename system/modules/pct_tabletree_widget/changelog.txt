@@ -1,5 +1,6 @@
 ### 2.1.0
 Update: Updates related to Contao 5.7 and furture Contao 6 (#74)
+Fixed: Tree view did not show child entries when using a custom keyField, because child lookup used keyField instead of the real parent id
 
 ### 2.0.3
 Fixed: Drag & Drop did not work in sortable widgets (#71)

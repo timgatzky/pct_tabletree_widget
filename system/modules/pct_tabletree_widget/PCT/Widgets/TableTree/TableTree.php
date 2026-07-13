@@ -208,6 +208,8 @@ class TableTree extends \Contao\Widget
 			}
 
 			$objRoot = $objDatabase->prepare("SELECT id,".$strValueField." FROM ".$this->strSource." WHERE CAST(".$strValueField." AS CHAR) REGEXP ? ".($this->strConditions ? " AND ".$this->strConditions:""))->execute($for);
+			
+			
 			if ($objRoot->numRows > 0)
 			{
 				// Respect existing limitations
@@ -255,7 +257,7 @@ class TableTree extends \Contao\Widget
 			$strNode = $objSession->get('tabletree_node');
 			
 			// Unset the node if it is not within the predefined node set (see #5899)
-			if ($strNode > 0 && is_array($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField]))
+			if ($strNode > 0 && isset($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField]) && is_array($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField]))
 			{
 				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField], $this->strSource)))
 				{
@@ -392,10 +394,29 @@ class TableTree extends \Contao\Widget
 			$this->strOrderField = '';
 		}
 		
+		// Resolve the real parent record id because pid always points to "id",
+		// even if a custom key field is used for value selection.
+		$intParentId = $id;
+		if ($this->strKeyField !== 'id')
+		{
+			$objParent = $objDatabase
+				->prepare("SELECT id FROM " . $this->strSource . " WHERE " . $this->strKeyField . "=?")
+				->limit(1)
+				->execute($id)
+			;
+
+			if ($objParent->numRows < 1)
+			{
+				return '';
+			}
+
+			$intParentId = $objParent->id;
+		}
+
 		// Load the requested nodes
 		$tree = '';
 		$level = $level * 30;
-		$objRows = \Contao\Database::getInstance()->prepare("SELECT id,".$this->strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))->execute($id);
+		$objRows = \Contao\Database::getInstance()->prepare("SELECT id,".$this->strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))->execute($intParentId);
 
 		while ($objRows->next())
 		{
@@ -456,7 +477,7 @@ class TableTree extends \Contao\Widget
 		if (!$blnNoRecursion && in_array($GLOBALS['TL_DCA'][$this->strSource]['list']['sorting']['mode'], $nestedModes) )
 		{
 			$objChilds = $objDatabase->prepare("SELECT id,".$strKeyField." FROM ".$this->strSource." WHERE pid=? ".($this->strOrderField ? " ORDER BY ".$this->strOrderField : ""))
-									   ->execute($id);
+									   ->execute($objRow->id);
 			if ($objChilds->numRows > 0)
 			{
 				$childs = $objChilds->fetchEach($strKeyField);
@@ -473,9 +494,10 @@ class TableTree extends \Contao\Widget
 		if (!empty($childs))
 		{
 			$folderAttribute = '';
-			$img = $blnIsOpen ? 'folMinus.gif' : 'folPlus.gif';
+			$img = 'chevron-right.svg';
+			$imgStyle = 'style="margin-right:2px;transition:transform .15s ease;' . ($blnIsOpen ? 'transform:rotate(90deg);' : '') . '"';
 			$alt = $blnIsOpen ? $GLOBALS['TL_LANG']['MSC']['collapseNode'] : $GLOBALS['TL_LANG']['MSC']['expandNode'];
-			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.\Contao\StringUtil::specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\',\''.$this->strValueField.'\',\''.$this->strKeyField.'\',\''.$this->strConditions.'\','.$level.')">'.\Contao\Image::getHtml($img, '', 'style="margin-right:2px"').'</a>';
+			$return .= '<a href="'.$this->addToUrl($flag.'tg='.$id).'" title="'.\Contao\StringUtil::specialchars($alt).'" onclick="return AjaxRequest.toggleTabletree(this,\''.$xtnode.'_'.$id.'\',\''.$this->strField.'\',\''.$this->strName.'\',\''.$this->strSource.'\',\''.$this->strValueField.'\',\''.$this->strKeyField.'\',\''.$this->strConditions.'\','.$level.')">'.\Contao\Image::getHtml($img, '', $imgStyle).'</a>';
 		}
 
 		// Set the protection status

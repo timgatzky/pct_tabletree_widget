@@ -1,0 +1,30 @@
+{% extends '@Contao/be_main.html.twig' %}
+
+{% block main_content %}
+    {% if managerHref %}
+        <div id="manager">
+            <a href="{{ managerHref }}" class="open" title="{{ manager|e('html_attr') }}">{{ manager }}</a>
+        </div>
+    {% endif %}
+
+    <form action="{{ action }}" method="post">
+        <input type="hidden" name="REQUEST_TOKEN" value="{{ request_token|e('html_attr') }}">
+        <input type="hidden" name="FORM_SUBMIT" value="pct_tableTreeWidget">
+
+        {% if addSearch %}
+            <div id="search" class="panel align_right">
+                <input type="text" name="keyword" id="keyword" value="{{ value|e('html_attr') }}" class="tl_text{% if value != '' %} active{% endif %}">
+                <input type="submit" name="search" value="{{ search|e('html_attr') }}" class="tl_submit">
+            </div>
+        {% endif %}
+
+        {% if panels %}
+            {{ panels|join('')|raw }}
+        {% endif %}
+    </form>
+
+    <div class="tl_listing_container" id="tl_listing">
+        {{ breadcrumb|default|raw }}
+        {{ main|raw }}
+    </div>
+{% endblock %}

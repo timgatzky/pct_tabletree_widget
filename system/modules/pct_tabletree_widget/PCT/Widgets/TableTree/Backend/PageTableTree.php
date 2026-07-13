@@ -26,6 +26,7 @@ use Contao\Config;
 use Contao\Database;
 use Contao\StringUtil;
 use Contao\BackendTemplate;
+use Contao\CoreBundle\ContaoCoreBundle;
 
 /**
  * Class file
@@ -54,10 +55,10 @@ class PageTableTree extends Backend
 	 */
 	public function run()
 	{
-		$objDatabase = Database::getInstance();
 		$objSession = System::getContainer()->get('request_stack')->getSession();
 		
 		$this->Template = new BackendTemplate('be_pct_tabletree');
+		$this->Template->setData($this->compileTemplateData($this->Template->getData()));
 		$this->Template->main = '';
 
 		// Ajax request
@@ -142,12 +143,29 @@ class PageTableTree extends Backend
 		}
 		
 		$objWidget = new \PCT\Widgets\TableTree($arrAttribs,$objDC);
+		
+		$container = System::getContainer();
+		$request = $container->get('request_stack')->getCurrentRequest();
+		$renderMainOnly  = $request->query->has('popup') || 'contao-main' === $request->headers->get('turbo-frame');
+
+		// Default headline
+		if (!isset($data['headline']))
+		{
+			$data['headline'] = $GLOBALS['TL_LANG']['MSC']['dashboard'];
+		}
+
+		// Default title
+		if (!isset($data['title']))
+		{
+			$data['title'] = $this->Template->headline;
+		}
+
 		$this->Template->main = $objWidget->generate();
-		$this->Template->theme = Backend::getTheme();
+		$this->Template->theme = '';
 		$this->Template->base = Environment::get('base');
 		$this->Template->language = $GLOBALS['TL_LANGUAGE'];
 		$this->Template->title = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']);
-		$this->Template->charset = Config::get('characterSet');
+		$this->Template->charset = $container->getParameter('kernel.charset');
 		$this->Template->addSearch = true;
 		$this->Template->search = $GLOBALS['TL_LANG']['MSC']['search'];
 		$this->Template->action = StringUtil::ampersand( Environment::get('request') );
@@ -157,7 +175,10 @@ class PageTableTree extends Backend
 		$this->Template->request_token = System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue();
 		$this->Template->value = $objSession->get('pct_tabletree_selector_search');
 		$this->Template->isPopup = true;
-		
+		$this->Template->version = ContaoCoreBundle::getVersion();
+		$this->Template->managerHref = '';
+		$this->Template->panels = array();
+
 		// add customs panels
 		$arrPanels = array();
 		if (isset($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel']) && !empty($GLOBALS['PCT_TABLETREE_HOOKS']['getCustomPanel']))
@@ -174,5 +195,48 @@ class PageTableTree extends Backend
 		}
 		
 		return $this->Template->parse();
+	}
+
+
+	/**
+	 * @internal
+	 */
+	// Taken from BackendMain.php
+	protected function compileTemplateData(array $data): array
+	{
+		// Default headline
+		if (!isset($data['headline']))
+		{
+			$data['headline'] = $GLOBALS['TL_LANG']['MSC']['dashboard'];
+		}
+
+		// Default title
+		if (!isset($data['title']))
+		{
+			$data['title'] = $this->Template->headline;
+		}
+
+		$container = System::getContainer();
+		$request = $container->get('request_stack')->getCurrentRequest();
+		$renderMainOnly  = $request->query->has('popup') || 'contao-main' === $request->headers->get('turbo-frame');
+
+		$data['language'] = $GLOBALS['TL_LANGUAGE'];
+		$data['title'] = StringUtil::specialchars(trim(strip_tags(preg_replace('~</span> <span.*?>~', ' › ', $data['title']))));
+		$data['host'] = Backend::getDecodedHostname();
+		$data['charset'] = $container->getParameter('kernel.charset');
+		$data['home'] = $GLOBALS['TL_LANG']['MSC']['home'];
+		$data['isPopup'] = $request->query->get('popup');
+		$data['renderMainOnly'] = $renderMainOnly;
+		$data['learnMore'] = \sprintf($GLOBALS['TL_LANG']['MSC']['learnMore'], '<a href="https://contao.org" target="_blank" rel="noreferrer noopener">contao.org</a>');
+		$data['backendWidth'] = BackendUser::getInstance()->backendWidth;
+
+		$twig = $container->get('twig');
+		$searchEnabled = $container->has('contao.search.backend') && $container->get('contao.search.backend')->isAvailable();
+
+		$data['menu'] = !$renderMainOnly ? $twig->render('@Contao/backend/chrome/main_menu.html.twig') : '';
+		$data['headerMenu'] = !$renderMainOnly ? $twig->render('@Contao/backend/chrome/header_menu.html.twig', array('searchEnabled' => $searchEnabled)) : '';
+		$data['isDebug'] = $container->getParameter('kernel.debug');
+
+		return $data;
 	}
 }

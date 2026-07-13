@@ -31,13 +31,3 @@ $classMap = array
 $loader = new \Composer\Autoload\ClassLoader();
 $loader->addClassMap($classMap);
 $loader->register();
-
-
-/**
- * Register the templates
- */
-\Contao\TemplateLoader::addFiles(array
-(
-	// widgets
-	'be_pct_tabletree'     => 	'system/modules/pct_tabletree_widget/templates',
-));

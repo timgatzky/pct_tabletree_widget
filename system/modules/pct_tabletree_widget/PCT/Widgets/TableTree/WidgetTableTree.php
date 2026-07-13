@@ -300,6 +300,19 @@ class WidgetTableTree extends \Contao\Widget
 		}
 		
 		$strToken = \Contao\System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue();
+		$jsTitle = json_encode($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']);
+		$jsSource = json_encode($this->strSource);
+		$jsTable = json_encode($this->strTable);
+		$jsValueField = json_encode($this->strValueField);
+		$jsKeyField = json_encode($this->strKeyField);
+		$jsTranslationField = json_encode($this->strTranslationField);
+		$jsRootsField = json_encode($this->strRootField);
+		$jsRoots = json_encode($this->strRoots);
+		$jsConditions = json_encode($this->strConditions);
+		$jsConditionsField = json_encode($this->strConditionsField);
+		$jsFieldName = json_encode($this->strField);
+		$jsWidgetId = json_encode($this->strId);
+		$jsToken = json_encode($strToken);
 
 		$intId = \Contao\Input::get('id');
 		if( isset($this->activeRecord->id) )
@@ -320,10 +333,10 @@ class WidgetTableTree extends \Contao\Widget
 		#Backend.openModalTabletreeSelector({\'width\':765,\'title\':\''.\Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tablepicker']).'\',\'url\':this.href,\'id\':\''.$this->strId.'\',\'source\':\''.$this->strSource.'\',\'table\':\''.$this->strTable.'\',\'valueField\':\''.$this->strValueField.'\',\'keyField\':\''.$this->strKeyField.'\'
 		#,\'translationField\':\''.$this->strTranslationField.'\',\'rootsField\':\''.$this->strRootField.'\',\'roots\':\''.$this->strRoots.'\'
 		#,\'conditions\':\''.$this->strConditions.'\',\'conditionsField\':\''.$this->strConditionsField.'\'})
-		$inputName = $this->strField;
 		$params = array
 		(
 			'key' => 'tabletree',
+			'popup' => '1',
 			'do' => 'pct_customelements_tags',
 			'table' => $this->strTable,
 			'field' => $this->strId,
@@ -341,27 +354,45 @@ class WidgetTableTree extends \Contao\Widget
 		$link = $GLOBALS['TL_LANG']['MSC']['changeSelection'];
 		
 		$return .= '</ul>';
-		$return .= '<p><a class="tl_submit" href="' . StringUtil::ampersand($href) . '" title="' . StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']) . '" id="pp_' . $inputName . '">' . $link . '</a><p>
+		$return .= '<p><a class="tl_submit" href="' . StringUtil::ampersand($href) . '" title="' . StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']) . '" id="pp_' . $this->strId . '">' . $link . '</a><p>
 		<script>
-			$("pp_' . $inputName . '").addEvent("click", function(e) {
+			$("pp_' . $this->strId . '").addEvent("click", function(e) {
 			e.preventDefault();
-			Backend.openModalTabletreeSelector({
-				"id": "'.$this->strField.'",
-				"title": ' .json_encode($GLOBALS['TL_LANG']['MSC']['pct_tableTreeTitle']) . ',
-				"url": this.href + "&value=" + document.getElementById("ctrl_' . $inputName . '").value,
-				"source":"'.$this->strSource.'",
-				"table":"'.$this->strTable.'",
-				"valueField":"'.$this->strValueField.'",
-				"keyField":"'.$this->strKeyField.'",
-				"translationField":"'.$this->strTranslationField.'",
-				"rootsField":"'.$this->strRootField.'",
-				"roots":"'.$this->strRoots.'",
-				"conditions":"'.$this->strConditions.'",
-				"conditionsField":"'.$this->strConditionsField.'",
-				"callback": function(picker, value) 
+			Backend.openModalSelector({
+				"id": "'.$this->strId.'",
+				"title": ' . $jsTitle . ',
+				"url": this.href + "&value=" + document.getElementById("ctrl_' . $this->strId . '").value,
+				"callback": function(picker, value)
 				{
-					$("ctrl_' . $inputName . '").value = value.join(",");
-					$("ctrl_' . $inputName . '").fireEvent("change");
+					AjaxRequest.displayBox(Contao.lang.loading + " ...");
+					new Request.Contao({
+						field: $("ctrl_' . $this->strId . '"),
+						url: location.href,
+						evalScripts: false,
+						onSuccess: function(txt, json) {
+							$("ctrl_' . $this->strId . '").getParent("div").set("html", json.content);
+							json.javascript && Browser.exec(json.javascript);
+							var evt = document.createEvent("HTMLEvents");
+							evt.initEvent("change", true, true);
+							$("ctrl_' . $this->strId . '").dispatchEvent(evt);
+							AjaxRequest.hideBox();
+						}
+					}).post({
+						"action": "reloadTabletree",
+						"name": ' . $jsFieldName . ',
+						"field": ' . $jsWidgetId . ',
+						"source": ' . $jsSource . ',
+						"table": ' . $jsTable . ',
+						"valueField": ' . $jsValueField . ',
+						"keyField": ' . $jsKeyField . ',
+						"translationField": ' . $jsTranslationField . ',
+						"rootsField": ' . $jsRootsField . ',
+						"roots": ' . $jsRoots . ',
+						"conditions": ' . $jsConditions . ',
+						"conditionsField": ' . $jsConditionsField . ',
+						"value": value.join("\t"),
+						"REQUEST_TOKEN": ' . $jsToken . '
+					});
 				}.bind(this)
 			});
 			});
@@ -369,7 +400,7 @@ class WidgetTableTree extends \Contao\Widget
 		
 		if( $this->blnIsSortable )
 		{
-			$return .= '<script>Backend.makeMultiSrcSortable("sort_' . $inputName . '", "ctrl_' . $inputName . '", "ctrl_' . $inputName . '")</script>';
+			$return .= '<script>Backend.makeMultiSrcSortable("sort_' . $this->strId . '", "ctrl_' . $this->strId . '", "ctrl_' . $this->strId . '")</script>';
 		}
 		
 		$return .= '</div>';

@@ -255,9 +255,10 @@ class TableTree extends \Contao\Widget
 			$strNode = $objSession->get('tabletree_node');
 			
 			// Unset the node if it is not within the predefined node set (see #5899)
-			if ($strNode > 0 && is_array($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField]))
+			// The field is defined in the DCA of strTable, not strSource
+			if ($strNode > 0 && is_array($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField] ?? null))
 			{
-				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strSource]['fields'][$this->strField][$this->strRootField], $this->strSource)))
+				if (!in_array($strNode, $objDatabase->getChildRecords($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strField][$this->strRootField], $this->strSource)))
 				{
 					$objSession->remove('tabletree_node');
 				}

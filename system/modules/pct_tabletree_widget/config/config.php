@@ -18,6 +18,7 @@ if( version_compare(ContaoCoreBundle::getVersion(),'5.0','>=') && version_compar
 {
 	$extensionDir = '/system/modules/pct_tabletree_widget';
 	$rootDir = System::getContainer()->getParameter('kernel.project_dir');
+	include( $rootDir.$extensionDir.'/config/autoload.php' );
 	include( $rootDir.$extensionDir.'/contao/config/config.php' );
 
 	// Create symlinks for the contao 5 folder structure

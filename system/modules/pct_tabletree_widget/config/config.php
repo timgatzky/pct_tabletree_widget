@@ -14,7 +14,7 @@
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\System;
 
-if( version_compare(ContaoCoreBundle::getVersion(),'5.0','>=') && version_compare(ContaoCoreBundle::getVersion(),'6.0','<') )
+if( version_compare(ContaoCoreBundle::getVersion(),'5.0','>=') && version_compare(ContaoCoreBundle::getVersion(),'5.8','<=') )
 {
 	$extensionDir = '/system/modules/pct_tabletree_widget';
 	$rootDir = System::getContainer()->getParameter('kernel.project_dir');
@@ -47,4 +47,12 @@ if( version_compare(ContaoCoreBundle::getVersion(),'5.0','>=') && version_compar
 			}
 		}
 	}
+
+	/**
+	 * Register the templates
+	 */
+	\Contao\TemplateLoader::addFiles(array
+	(
+		'be_pct_tabletree' 					=> 'system/modules/pct_tabletree_widget/contao/templates',
+	));
 }
